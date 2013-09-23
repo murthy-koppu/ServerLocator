@@ -1,3 +1,4 @@
+package com.imaginea.serverlocator.retrialclass;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;

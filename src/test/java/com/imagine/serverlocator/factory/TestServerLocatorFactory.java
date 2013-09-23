@@ -1,6 +1,5 @@
 package com.imagine.serverlocator.factory;
 
-import static org.junit.Assert.*;
 import junit.framework.Assert;
 
 import org.junit.Before;
