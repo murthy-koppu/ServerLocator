@@ -1,4 +1,4 @@
-package com.imaginea.serverlocator.retrialclass;
+package com.imaginea.serverlocator.retrials;
 import com.imaginea.serverlocator.factory.ServerLocatorFactory;
 
 

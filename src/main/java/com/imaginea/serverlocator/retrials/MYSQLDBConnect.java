@@ -1,4 +1,4 @@
-package com.imaginea.serverlocator.retrialclass;
+package com.imaginea.serverlocator.retrials;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.Statement;

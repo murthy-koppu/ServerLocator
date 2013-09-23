@@ -6,8 +6,8 @@ import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 
-import com.imaginea.serverlocator.factory.ServersEnum;
 import com.imaginea.serverlocator.util.PacketBuffer;
+import com.imaginea.serverlocator.util.ServersEnum;
 import com.imaginea.serverlocator.util.Utils;
 
 public class MySQLLocator implements ServerLocator{
@@ -39,7 +39,8 @@ public class MySQLLocator implements ServerLocator{
 				if(!isValidVersion(version)){
 					log.error("Version data from DataStream validation failed");
 					return null;
-				}				
+				}
+				
 				
 				ServerProperties serverProp = new ServerProperties();
 				//TODO Check possiblility to move setting hostName and PortNo at Factory

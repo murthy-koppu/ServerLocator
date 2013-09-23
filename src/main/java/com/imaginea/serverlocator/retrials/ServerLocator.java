@@ -1,4 +1,4 @@
-package com.imaginea.servertracker;
+package com.imaginea.serverlocator.retrials;
 
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -16,7 +16,6 @@ public class ServerLocator {
 			URL ipUrl = new URL(ipAddress);
 			
 			try {
-				//Utils.
 				Socket clientSocket = new Socket(InetAddress.getByName("ipAddress"), port);
 				InputStream inStream = clientSocket.getInputStream();
 				DataInputStream dInStream = new DataInputStream(inStream);

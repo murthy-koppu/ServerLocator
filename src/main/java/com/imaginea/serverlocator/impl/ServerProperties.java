@@ -2,7 +2,7 @@ package com.imaginea.serverlocator.impl;
 
 import java.util.Properties;
 
-import com.imaginea.serverlocator.factory.ConnectionProperties;
+import com.imaginea.serverlocator.util.ConnectionProperties;
 
 public class ServerProperties {
 	private String hostName;

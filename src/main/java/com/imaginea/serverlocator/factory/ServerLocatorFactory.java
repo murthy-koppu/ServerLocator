@@ -12,6 +12,8 @@ import org.apache.log4j.Logger;
 
 import com.imaginea.serverlocator.impl.MySQLLocator;
 import com.imaginea.serverlocator.impl.ServerProperties;
+import com.imaginea.serverlocator.util.ConnectionProperties;
+import com.imaginea.serverlocator.util.ServersEnum;
 
 public class ServerLocatorFactory {
 	static Logger log = Logger.getLogger(ServerLocatorFactory.class);

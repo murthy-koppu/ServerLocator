@@ -1,4 +1,4 @@
-package com.imaginea.serverlocator.retrialclass;
+package com.imaginea.serverlocator.retrials;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
