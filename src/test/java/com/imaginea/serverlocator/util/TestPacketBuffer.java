@@ -14,10 +14,12 @@ public class TestPacketBuffer {
 	}
 
 	@Test
-	public void testValidateIntPass() {
-		PacketBuffer packetBuffer = new PacketBuffer(new byte[]{91,24});
-		Assert.assertEquals(packetBuffer.validateInt(new byte[]{52,49}),true);
-		
+	public void testValidateInt() {
+		Assert.assertEquals(PacketBuffer.validateInt(new byte[]{57,48}), true);
+		Assert.assertEquals(PacketBuffer.validateInt(new byte[]{52}),true);
+		Assert.assertFalse(PacketBuffer.validateInt(new byte[]{58,48}));
+		Assert.assertFalse(PacketBuffer.validateInt(new byte[]{56,99}));
+		Assert.assertFalse(PacketBuffer.validateInt(new byte[]{52,(byte)'.'}));		
 	}
 
 	@Test

@@ -14,7 +14,8 @@ public class MySQLLocator implements ServerLocator{
 
 	PacketBuffer bufferPacket = null;
 	static Logger log = Logger.getLogger(MySQLLocator.class);
-	//@Override
+	
+	@Override
 	public ServerProperties parseToServerProp(InetAddress iNetAddr, int port) {
 			log.debug("********** Entered into MySQLLocator --> parseToServerProp() ********");
 			try {
@@ -40,8 +41,7 @@ public class MySQLLocator implements ServerLocator{
 					log.error("Version data from DataStream validation failed");
 					return null;
 				}
-				
-				
+							
 				ServerProperties serverProp = new ServerProperties();
 				//TODO Check possiblility to move setting hostName and PortNo at Factory
 				serverProp.setHostName(iNetAddr.getHostName());
@@ -73,8 +73,7 @@ public class MySQLLocator implements ServerLocator{
 		if(PacketBuffer.validateInt(packetLengthInBytes) || noOfLengthBytes < 3){
 			log.error("Unable to parse socket output as MySQL response");
 			return null;
-		}
-			
+		}			
 		
 		int packetLength = (packetLengthInBytes[0] & 0xff) +
 		((packetLengthInBytes[1] & 0xff) << 8) +
