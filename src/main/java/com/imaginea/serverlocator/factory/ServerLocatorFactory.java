@@ -6,10 +6,6 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import org.apache.log4j.Logger;
-
-
-
-
 import com.imaginea.serverlocator.impl.MySQLLocator;
 import com.imaginea.serverlocator.impl.ServerProperties;
 import com.imaginea.serverlocator.util.ConnectionProperties;
