@@ -7,16 +7,18 @@ import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 
+import org.apache.log4j.Logger;
+
 
 public class Utils {
 
+	static Logger log = Logger.getLogger(Utils.class);
 	public static DataInputStream getDataInStreamFromServer(Socket socket) throws IOException{
-		if(socket == null){
-			throw new IOException("Invalid socket passed to connect to server");
-		}
 		InputStream inStream = socket.getInputStream();
-		if(inStream != null)
+		if(inStream == null){
+			log.error("Unable to get InputStream from socket");
 			throw new IOException("Unable to get InputStream from socket");
+		}
 		DataInputStream dInStream = new DataInputStream(inStream);
 		return dInStream;
 	}

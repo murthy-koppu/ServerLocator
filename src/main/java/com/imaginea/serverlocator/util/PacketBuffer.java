@@ -36,10 +36,10 @@ public class PacketBuffer {
 	
 	public String readString() throws Exception{
 		
-		byte byteData = packet[getPacketPosition()];
+		byte byteData = 0;
 		String strOPData = "";
-		while(byteData != 0)
-			strOPData += byteData;
+		while((byteData = packet[getPacketPosition()]) != 0)
+			strOPData += (char)byteData;
 		
 		return strOPData;
 	}
