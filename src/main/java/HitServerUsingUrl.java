@@ -32,6 +32,17 @@ public class HitServerUsingUrl {
 	 
 	 public static void main(String[] args) {
 		// doSearch("jdbc:mysql://localhost:3306");
-		 doSearch("http://localhost:8080");
+		 //doSearch("http://localhost:8080");
+		 System.out.println(isValidVersion("3."));
 	}
+	 
+	 private static boolean isValidVersion(String version){
+			char[] versionCharArr = version.toCharArray();
+			for(int i=0; i< versionCharArr.length; i++){
+				byte versionByte = (byte) versionCharArr[i];
+				if((!(versionByte > 47 && versionByte < 58) && versionByte != 46))
+					return false;
+			}
+			return true;
+		}
 }

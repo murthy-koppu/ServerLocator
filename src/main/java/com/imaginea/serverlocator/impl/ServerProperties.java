@@ -2,12 +2,23 @@ package com.imaginea.serverlocator.impl;
 
 import java.util.Properties;
 
+import com.imaginea.serverlocator.factory.ConnectionProperties;
+
 public class ServerProperties {
 	private String hostName;
 	private int portNo;
 	private String version;
 	private String serverName;
 	private Properties otherProperties = new Properties();
+	private ConnectionProperties connectionStatus = ConnectionProperties.HOST_UNREACHABLE;
+	
+	public ServerProperties(){
+		
+	}
+	
+	public ServerProperties(ConnectionProperties connectionStatus){
+		this.connectionStatus = connectionStatus;
+	}
 	
 	public String getHostName() {
 		return hostName;
@@ -48,6 +59,12 @@ public class ServerProperties {
 	}
 	Object addProperty(String name, String value){
 		return this.otherProperties.put(name, value);
+	}
+	public ConnectionProperties getConnectionStatus() {
+		return connectionStatus;
+	}
+	public void setConnectionStatus(ConnectionProperties connectionStatus) {
+		this.connectionStatus = connectionStatus;
 	}
 		
 }

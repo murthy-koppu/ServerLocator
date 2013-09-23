@@ -22,19 +22,9 @@ public class Utils {
 	}
 	
 	public static DataInputStream getDataInStreamFromServer(InetAddress iNetAddr, int port ) throws IOException{
-		Socket clientSkt = new Socket(iNetAddr,port);
-		return getDataInStreamFromServer(clientSkt);
+		Socket clientSocket = new Socket(iNetAddr,port);
+		return getDataInStreamFromServer(clientSocket);
 	}
-	
-	 private final int readFully(InputStream in, byte[] b, int off, int len)
-     throws IOException {
-     if (len < 0) {
-         throw new IndexOutOfBoundsException();
-     }
 
-     int n = 0;
-     int count = in.read(b, off + n, len - n);
-     return n;
- }
 	
 }
