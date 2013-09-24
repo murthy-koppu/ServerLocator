@@ -13,9 +13,10 @@ import com.imaginea.serverlocator.util.ApplicationConstants;
 
 public class AppServerLocator implements ServerLocator,ApplicationConstants{
 	static Logger log = Logger.getLogger(AppServerLocator.class);
+	private int connectionTimeOut = APP_SERVER_TIME_OUT_PERIOD;
 	
 	@Override
-	public ServerProperties parseToServerProp(InetAddress iNetAddr, int portNo) {
+	public ServerProperties parseToServerProp(InetAddress iNetAddr, int portNo, boolean isLimitedTimeOut) {
 		log.debug("********** Entered into ApacheServerLocator --> parseToServerProp() ********");
 		String urlAddress = "http://"+iNetAddr.getHostAddress()+":"+portNo+"/"+((((Double)Math.random()).byteValue()) | ((Double)Math.random()).intValue());
 		URL url = null;
@@ -23,7 +24,7 @@ public class AppServerLocator implements ServerLocator,ApplicationConstants{
 		try {
 			url = new URL(urlAddress);
 			connection = url.openConnection();
-			//connection.setConnectTimeout(10000);
+			connection.setConnectTimeout(connectionTimeOut);
 			connection.setDoOutput(true);
 			String serverDetails = connection.getHeaderField(WEB_SERVER_HEADER_NAME);
 			if(serverDetails != null && !serverDetails.isEmpty()){
@@ -44,7 +45,7 @@ public class AppServerLocator implements ServerLocator,ApplicationConstants{
 				log.error("Unable to close Url connection",e);
 			}
 		}
-		log.debug("Current execution Server details failed for Apache Test");
+		log.debug("Current execution Server details failed for App Server Test");
 		return null;
 	}
 	

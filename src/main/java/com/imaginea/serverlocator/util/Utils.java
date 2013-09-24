@@ -23,8 +23,9 @@ public class Utils {
 		return dInStream;
 	}
 	
-	public static DataInputStream getDataInStreamFromServer(InetAddress iNetAddr, int port ) throws IOException{
+	public static DataInputStream getDataInStreamFromServer(InetAddress iNetAddr, int port, int connectionTimeOut) throws IOException{
 		Socket clientSocket = new Socket(iNetAddr,port);
+		clientSocket.setSoTimeout(connectionTimeOut);
 		return getDataInStreamFromServer(clientSocket);
 	}
 

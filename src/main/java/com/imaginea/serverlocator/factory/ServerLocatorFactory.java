@@ -47,16 +47,19 @@ public class ServerLocatorFactory {
 		if(optimizedChoices == null){
 			optimizedChoices = ServersEnum.values();
 		}
-		for(ServersEnum inServerChoice: optimizedChoices){
-			serverProp = findServerDetails(iNetAddr, port, inServerChoice);
-			if(serverProp != null){
-				serverProp.setHostName(iNetAddr.getHostName());
-				serverProp.setPortNo(port);
-				serverProp.setConnectionStatus(ConnectionProperties.SERVER_LISTENING);
-				log.debug("Found Server Details with Server Name "+ serverProp.getHostName()+" and version "+serverProp.getVersion());
-				return serverProp;
-			}				
+		for(int i = 0; i < 2; i++){
+			for(ServersEnum inServerChoice: optimizedChoices){
+				serverProp = findServerDetails(iNetAddr, port, inServerChoice, i==0?true:false);
+				if(serverProp != null){
+					serverProp.setHostName(iNetAddr.getHostName());
+					serverProp.setPortNo(port);
+					serverProp.setConnectionStatus(ConnectionProperties.SERVER_LISTENING);
+					log.debug("Found Server Details with Server Name "+ serverProp.getHostName()+" and version "+serverProp.getVersion());
+					return serverProp;
+				}				
+			}
 		}
+		
 		return serverProp;
 	}
 	
@@ -80,13 +83,14 @@ public class ServerLocatorFactory {
 	}
 
 	private static ServerProperties findServerDetails(InetAddress iNetAddr, int port,
-			ServersEnum inServerChoice) {
+			ServersEnum inServerChoice, boolean isLimitedTimeOut) {
 		switch(inServerChoice){
-		case MY_SQL:{
-			return new MySQLLocator().parseToServerProp(iNetAddr, port);			
-		}
+		
 		case APP_SERVER:{
-			return new AppServerLocator().parseToServerProp(iNetAddr, port);
+			return new AppServerLocator().parseToServerProp(iNetAddr, port, isLimitedTimeOut);
+		}
+		case MY_SQL:{
+			return new MySQLLocator().parseToServerProp(iNetAddr, port, isLimitedTimeOut);			
 		}
 		
 		}

@@ -6,22 +6,24 @@ import java.net.InetAddress;
 
 import org.apache.log4j.Logger;
 
+import com.imaginea.serverlocator.util.ApplicationConstants;
 import com.imaginea.serverlocator.util.PacketBuffer;
 import com.imaginea.serverlocator.util.ServersEnum;
 import com.imaginea.serverlocator.util.Utils;
 
-public class MySQLLocator implements ServerLocator{
+public class MySQLLocator implements ServerLocator,ApplicationConstants{
 
 	PacketBuffer bufferPacket = null;
 	static Logger log = Logger.getLogger(MySQLLocator.class);
+	private int connectionTimeOut = DB_SERVER_TIME_OUT_PERIOD;
 	
 	@Override
-	public ServerProperties parseToServerProp(InetAddress iNetAddr, int port) {
+	public ServerProperties parseToServerProp(InetAddress iNetAddr, int port, boolean isLimitedTimeOut) {
 			log.debug("********** Entered into MySQLLocator --> parseToServerProp() ********");
 			try {
 				DataInputStream dInStream = null;
 				try{
-					dInStream = Utils.getDataInStreamFromServer(iNetAddr, port);
+					dInStream = Utils.getDataInStreamFromServer(iNetAddr, port,connectionTimeOut);
 				}catch(IOException e){
 					log.error("Unable to get DataInputStream",e);
 					return null;
