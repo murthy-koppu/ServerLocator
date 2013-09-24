@@ -45,10 +45,10 @@ public class ServerProperties {
 	}
 	
 	
-	void setHostName(String hostName) {
+	public void setHostName(String hostName) {
 		this.hostName = hostName;
 	}
-	void setPortNo(int portNo) {
+	public void setPortNo(int portNo) {
 		this.portNo = portNo;
 	}
 	void setVersion(String version) {

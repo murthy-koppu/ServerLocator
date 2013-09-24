@@ -23,18 +23,19 @@ public class ResponseParse {
 		*/
 		/*InetAddress objInet = InetAddress.getByName("https://www.google.co.in");
 		System.out.println(objInet);*/
-		Socket client = new Socket("localhost", 3306);
+		Socket client = new Socket("localhost", 8080);
 		System.out.println("Inet address is "+client.getInetAddress());
 		InputStream s1In = client.getInputStream();
 		 DataInputStream dis = new DataInputStream(s1In);
 		 Byte byteMsg = null;
 		 long l =0;
-		 while(l < 77){
-			 if((byteMsg = dis.readByte()) != null)
-				 System.out.print((char)(byteMsg.byteValue()));
-			 l++;
+		 while(true){
+			/* if((byteMsg = dis.readByte()) != null)
+				 System.out.print((byteMsg.byteValue()));
+			 l++;*/
+			 System.out.print((dis.readByte()));		
 		 }
-		 SocketAddress serverAddr = client.getRemoteSocketAddress();
+		// SocketAddress serverAddr = client.getRemoteSocketAddress();
 		
 		 /*char ch= '\0';
 		 while(true){

@@ -14,17 +14,18 @@ public class HitServerUsingUrl {
 		 URL url = new URL(queryString);
 		 URLConnection connection = url.openConnection();
 		 connection.setDoOutput(true);
+		 System.out.println(connection.getHeaderFields());
 		 // write the query string to the search engine
-		 PrintStream ps = new PrintStream(connection.getOutputStream());
-		 ps.println(queryString);
-		 ps.close();
+//		 PrintStream ps = new PrintStream(connection.getOutputStream());
+//		 ps.print("SHUTDOWN");
+//		 ps.flush();
 		 // read the result
-		 DataInputStream input = 
+	/*	 DataInputStream input = 
 		 new DataInputStream(connection.getInputStream());
 		 String inputLine = null;
 		 while((inputLine = input.readLine())!= null) {
 		 System.out.println(inputLine);
-		 }
+		 }*/
 		 } 
 		 catch(Exception e) {
 		 e.printStackTrace();
@@ -34,7 +35,14 @@ public class HitServerUsingUrl {
 	 public static void main(String[] args) {
 		// doSearch("jdbc:mysql://localhost:3306");
 		 //doSearch("http://localhost:8080");
-		 System.out.println(isValidVersion("3."));
+		 //doSearch("http://localhost:8080/colearn/CourseRegistration");
+		 try{
+			 doSearch("http://localhost:8080/asd");
+		 }catch(Exception e){
+			 e.printStackTrace();
+		 }
+		
+		 //System.out.println(isValidVersion("3."));
 	}
 	 
 	 private static boolean isValidVersion(String version){

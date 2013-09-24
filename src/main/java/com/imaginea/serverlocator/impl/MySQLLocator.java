@@ -21,12 +21,13 @@ public class MySQLLocator implements ServerLocator{
 			try {
 				DataInputStream dInStream = null;
 				try{
-					dInStream = Utils.getDataInStreamFromServer(iNetAddr, port);					
+					dInStream = Utils.getDataInStreamFromServer(iNetAddr, port);
 				}catch(IOException e){
 					log.error("Unable to get DataInputStream",e);
 					return null;
 				}				
 				bufferPacket = getDataPacket(dInStream);
+				dInStream.close();
 				if(bufferPacket == null)
 					return null;				
 				bufferPacket.skipByte(1);
@@ -43,9 +44,6 @@ public class MySQLLocator implements ServerLocator{
 				}
 							
 				ServerProperties serverProp = new ServerProperties();
-				//TODO Check possiblility to move setting hostName and PortNo at Factory
-				serverProp.setHostName(iNetAddr.getHostName());
-				serverProp.setPortNo(port);
 				serverProp.setServerName(ServersEnum.MY_SQL.toString());
 				serverProp.setVersion(version);
 				
@@ -53,7 +51,7 @@ public class MySQLLocator implements ServerLocator{
 			} catch (Exception e) {
 				log.error("Unable to parse socket output as MySQL response"+e);
 				return null;
-			}	
+			}
 	}
 	
 		

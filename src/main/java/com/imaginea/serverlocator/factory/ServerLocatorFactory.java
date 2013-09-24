@@ -6,6 +6,8 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import org.apache.log4j.Logger;
+
+import com.imaginea.serverlocator.impl.AppServerLocator;
 import com.imaginea.serverlocator.impl.MySQLLocator;
 import com.imaginea.serverlocator.impl.ServerProperties;
 import com.imaginea.serverlocator.util.ConnectionProperties;
@@ -16,21 +18,20 @@ public class ServerLocatorFactory {
 	
 	public static ServerProperties getServerLocator(ServersEnum[] optimizedChoices,InetAddress iNetAddr, int port) {	
 		ServerProperties serverProp = new ServerProperties();
-		try {
-			iNetAddr.isReachable(10000);
-			try{
-				Socket clientSocket = new Socket(iNetAddr, port);	
-			}catch (IOException e) {
-				log.error("Unable to connect to server", e);
-				serverProp.setConnectionStatus(ConnectionProperties.SERVER_UNREACHABLE);
-				return serverProp;
-			}
-			
-		} catch (IOException e) {
-			log.error("Unable to connect to host", e);
+		Socket clientSocket = null;
+		try{
+			clientSocket = new Socket(iNetAddr, port);	
+		}catch (IOException e) {
+			log.error("Unable to connect to server", e);
+			serverProp.setConnectionStatus(ConnectionProperties.SERVER_UNREACHABLE);
 			return serverProp;
+		}finally{
+			try {
+				clientSocket.close();
+			} catch (IOException e) {
+				log.error("Unable to close the client socket", e);
+			}
 		}
-		
 		serverProp = chooseServerLocatorFmChoices(optimizedChoices, iNetAddr, port,
 				serverProp);
 		if(serverProp.getConnectionStatus() == ConnectionProperties.SERVER_LISTENING)
@@ -49,7 +50,10 @@ public class ServerLocatorFactory {
 		for(ServersEnum inServerChoice: optimizedChoices){
 			serverProp = findServerDetails(iNetAddr, port, inServerChoice);
 			if(serverProp != null){
+				serverProp.setHostName(iNetAddr.getHostName());
+				serverProp.setPortNo(port);
 				serverProp.setConnectionStatus(ConnectionProperties.SERVER_LISTENING);
+				log.debug("Found Server Details with Server Name "+ serverProp.getHostName()+" and version "+serverProp.getVersion());
 				return serverProp;
 			}				
 		}
@@ -80,6 +84,9 @@ public class ServerLocatorFactory {
 		switch(inServerChoice){
 		case MY_SQL:{
 			return new MySQLLocator().parseToServerProp(iNetAddr, port);			
+		}
+		case APP_SERVER:{
+			return new AppServerLocator().parseToServerProp(iNetAddr, port);
 		}
 		
 		}

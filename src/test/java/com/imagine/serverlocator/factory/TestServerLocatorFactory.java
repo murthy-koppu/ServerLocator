@@ -34,6 +34,16 @@ public class TestServerLocatorFactory {
 		Assert.assertEquals(serverProp.getConnectionStatus(), ConnectionProperties.HOST_UNREACHABLE);
 	}
 	
+	@Test
+	public void testGetServerLocatorStringIntAppServer() {
+		String hostAddress = "localhost";
+		int port = 8080;
+		ServerProperties serverProp = ServerLocatorFactory.getServerLocator(hostAddress,port);
+		Assert.assertEquals(serverProp.getConnectionStatus(), ConnectionProperties.SERVER_LISTENING);
+		Assert.assertEquals(serverProp.getHostName(), hostAddress);
+		Assert.assertEquals(serverProp.getPortNo(), port);
+		Assert.assertEquals(serverProp.getServerName(), "Apache-Coyote/1.1");
+	}
 
 
 }
