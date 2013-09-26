@@ -31,7 +31,9 @@ public class AppServerLocator implements ServerLocator,ApplicationConstants{
 		try {
 			url = new URL(urlAddress);
 			connection = url.openConnection();
-			connection.setConnectTimeout(connectionTimeOut);
+			if(isLimitedTimeOut){
+				connection.setConnectTimeout(connectionTimeOut);
+			}			
 			connection.setDoOutput(true);
 			String serverDetails = connection.getHeaderField(WEB_SERVER_HEADER_NAME);
 			if(serverDetails != null && !serverDetails.isEmpty()){

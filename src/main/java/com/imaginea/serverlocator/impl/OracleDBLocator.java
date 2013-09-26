@@ -130,8 +130,8 @@ public class OracleDBLocator implements ServerLocator,ApplicationConstants{
 	}
 	
 	private void getAddressData(InetAddress iNetAddr, int port){
-		String strHostName = iNetAddr.getHostName();
-		StringBuilder netPropData = new StringBuilder("(DESCRIPTION=(CONNECT_DATA=(SID=)(CID=(PROGRAM=JDBC Thin Client)(HOST=__jdbc__)(USER=murthykoppu)))(ADDRESS=(PROTOCOL=tcp)(HOST="+strHostName+")(PORT="+port+")))");		
+		String hostAddress = iNetAddr.getHostAddress();
+		StringBuilder netPropData = new StringBuilder("(DESCRIPTION=(CONNECT_DATA=(SID=)(CID=(PROGRAM=JDBC Thin Client)(HOST=__jdbc__)(USER=murthykoppu)))(ADDRESS=(PROTOCOL=tcp)(HOST="+hostAddress+")(PORT="+port+")))");		
 		addressData = new byte[netPropData.length()+24];
 		netPropData.toString().getBytes(0, netPropData.length(), addressData, 24);
 	}
