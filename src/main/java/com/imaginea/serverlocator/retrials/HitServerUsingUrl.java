@@ -15,6 +15,8 @@ public class HitServerUsingUrl {
 		 URLConnection connection = url.openConnection();
 		 connection.setDoOutput(true);
 		 System.out.println(connection.getHeaderFields());
+		 System.out.println(connection.getContent());
+		 
 		 // write the query string to the search engine
 //		 PrintStream ps = new PrintStream(connection.getOutputStream());
 //		 ps.print("SHUTDOWN");
@@ -37,7 +39,7 @@ public class HitServerUsingUrl {
 		 //doSearch("http://localhost:8080");
 		 //doSearch("http://localhost:8080/colearn/CourseRegistration");
 		 try{
-			 doSearch("http://localhost:8080/asd");
+			 doSearch("jdbc://localhost:1521/");
 		 }catch(Exception e){
 			 e.printStackTrace();
 		 }

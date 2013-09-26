@@ -17,7 +17,7 @@ public class TestServerLocatorFactory {
 	}
 
 	@Test
-	public void testGetServerLocatorStringIntPass() {
+	public void testGetServerLocatorStringIntMySQL() {
 		String hostAddress = "localhost";
 		ServerProperties serverProp = ServerLocatorFactory.getServerLocator(hostAddress,3306);
 		Assert.assertEquals(serverProp.getConnectionStatus(), ConnectionProperties.SERVER_LISTENING);
@@ -43,6 +43,17 @@ public class TestServerLocatorFactory {
 		Assert.assertEquals(serverProp.getHostName(), hostAddress);
 		Assert.assertEquals(serverProp.getPortNo(), port);
 		Assert.assertEquals(serverProp.getServerName(), "Apache-Coyote/1.1");
+	}
+	
+	@Test
+	public void testGetServerLocatorStringIntOracle() {
+		String hostAddress = "localhost";
+		int port = 1521;
+		ServerProperties serverProp = ServerLocatorFactory.getServerLocator(hostAddress,port);
+		Assert.assertEquals(serverProp.getConnectionStatus(), ConnectionProperties.SERVER_LISTENING);
+		Assert.assertEquals(serverProp.getHostName(), hostAddress);
+		Assert.assertEquals(serverProp.getPortNo(), port);
+		Assert.assertEquals(serverProp.getServerName(), "Oracle Database");
 	}
 
 

@@ -23,7 +23,7 @@ public class MySQLLocator implements ServerLocator,ApplicationConstants{
 			try {
 				DataInputStream dInStream = null;
 				try{
-					dInStream = Utils.getDataInStreamFromServer(iNetAddr, port,connectionTimeOut);
+					dInStream = Utils.getDataInStreamFromServer(iNetAddr, port,connectionTimeOut,isLimitedTimeOut);
 				}catch(IOException e){
 					log.error("Unable to get DataInputStream",e);
 					return null;

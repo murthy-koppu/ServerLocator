@@ -6,6 +6,8 @@ import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 
@@ -14,6 +16,11 @@ import com.imaginea.serverlocator.util.ApplicationConstants;
 public class AppServerLocator implements ServerLocator,ApplicationConstants{
 	static Logger log = Logger.getLogger(AppServerLocator.class);
 	private int connectionTimeOut = APP_SERVER_TIME_OUT_PERIOD;
+	private static Map<String, String>  serverNameAliasMapDescription = new HashMap<String, String>();
+	
+	static{
+		
+	}
 	
 	@Override
 	public ServerProperties parseToServerProp(InetAddress iNetAddr, int portNo, boolean isLimitedTimeOut) {

@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 
 import com.imaginea.serverlocator.impl.AppServerLocator;
 import com.imaginea.serverlocator.impl.MySQLLocator;
+import com.imaginea.serverlocator.impl.OracleDBLocator;
 import com.imaginea.serverlocator.impl.ServerProperties;
 import com.imaginea.serverlocator.util.ConnectionProperties;
 import com.imaginea.serverlocator.util.ServersEnum;
@@ -60,7 +61,7 @@ public class ServerLocatorFactory {
 			}
 		}
 		
-		return serverProp;
+		return new ServerProperties();
 	}
 	
 	public static ServerProperties getServerLocator(InetAddress iNetAddr, int port) {
@@ -91,6 +92,9 @@ public class ServerLocatorFactory {
 		}
 		case MY_SQL:{
 			return new MySQLLocator().parseToServerProp(iNetAddr, port, isLimitedTimeOut);			
+		}		
+		case ORACLE_DB:{
+			return new OracleDBLocator().parseToServerProp(iNetAddr, port, isLimitedTimeOut);
 		}
 		
 		}
