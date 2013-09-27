@@ -11,7 +11,6 @@ import java.net.SocketException;
 
 import org.apache.log4j.Logger;
 
-
 public class Utils {
 
 	static Logger log = Logger.getLogger(Utils.class);
@@ -35,17 +34,15 @@ public class Utils {
 		return dOutStream;
 	}
 	
-	public static DataInputStream getDataInStreamFromServer(InetAddress iNetAddr, int port, int connectionTimeOut, boolean isLimitedTimeOut) throws IOException{
-		Socket clientSocket = getClientSocket(iNetAddr, port, connectionTimeOut, isLimitedTimeOut);
+	public static DataInputStream getDataInStreamFromServer(InetAddress iNetAddr, int port, int connectionTimeOut) throws IOException{
+		Socket clientSocket = getClientSocket(iNetAddr, port, connectionTimeOut);
 		return getDataInStreamFromServer(clientSocket);
 	}
 
 	public static Socket getClientSocket(InetAddress iNetAddr, int port,
-			int connectionTimeOut, boolean isLimitedTimeOut) throws IOException, SocketException {
+			int connectionTimeOut) throws IOException, SocketException {
 		Socket clientSocket = new Socket(iNetAddr,port);
-		if(isLimitedTimeOut){
-			clientSocket.setSoTimeout(connectionTimeOut);
-		}
+		clientSocket.setSoTimeout(connectionTimeOut);
 		clientSocket.setKeepAlive(true);
 		return clientSocket;
 	}
@@ -58,12 +55,12 @@ public class Utils {
 				try {
 					int tempBytesRead = dInStream.read(destination, off+totalBytesRead, len-totalBytesRead);
 					if(tempBytesRead < 0){
-						log.error("Unable to read required number of bytes");
+						log.debug("Unable to read required number of bytes");
 						throw new Exception();
 					}
 					totalBytesRead += tempBytesRead;
 				} catch (IOException e) {
-					log.error("Unable to read Required bytes from Socket");
+					log.debug("Unable to read Required bytes from Socket");
 					throw e;
 				}
 			}

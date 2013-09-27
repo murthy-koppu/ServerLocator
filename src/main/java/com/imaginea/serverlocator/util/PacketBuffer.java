@@ -2,10 +2,14 @@ package com.imaginea.serverlocator.util;
 
 
 public class PacketBuffer {
-	int packetPosition = -1;
-	int packetLen = -1;
-	byte[] packet = null;
+	private int packetPosition = -1;
+	private int packetLen = -1;
+	private byte[] packet = null;
 	
+	public byte[] getPacket() {
+		return packet;
+	}
+
 	private int getPacketPosition() throws Exception{
 		if(packetPosition >= packet.length)
 			throw new Exception();
@@ -17,7 +21,7 @@ public class PacketBuffer {
 		packetPosition = 0;
 	}
 	
-	public static boolean validateInt(final byte[] inDatas){
+	public static boolean isInvalidInt(final byte[] inDatas){
 		boolean isInputInt = true;
 		for(int i=0; i<inDatas.length && isInputInt ; i++)
 			isInputInt = (inDatas[i] < 58 && inDatas[i] > 47) ? true:false;
@@ -28,7 +32,7 @@ public class PacketBuffer {
 	public int readInt() throws Exception{
 		byte dataAsInt =  packet[getPacketPosition()];
 		byte dataAsInt1 = packet[getPacketPosition()];
-		if(!validateInt(new byte[]{dataAsInt,dataAsInt1}))
+		if(!isInvalidInt(new byte[]{dataAsInt,dataAsInt1}))
 			throw new Exception();	
 		
 		return (dataAsInt & 0xff | ((dataAsInt1 & 0xff)<<8));
@@ -56,5 +60,7 @@ public class PacketBuffer {
 		while(packet[getPacketPosition()] != 0)
 			;
 	}
+	
+	
 	
 }

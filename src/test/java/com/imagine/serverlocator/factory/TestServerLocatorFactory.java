@@ -47,8 +47,8 @@ public class TestServerLocatorFactory {
 	
 	@Test
 	public void testGetServerLocatorStringIntOracle() {
-		String hostAddress = "localhost";
-		int port = 1521;
+		String hostAddress = "127.0.0.1";
+		int port = 9005;
 		ServerProperties serverProp = ServerLocatorFactory.getServerLocator(hostAddress,port);
 		Assert.assertEquals(serverProp.getConnectionStatus(), ConnectionProperties.SERVER_LISTENING);
 		Assert.assertEquals(serverProp.getHostName(), hostAddress);

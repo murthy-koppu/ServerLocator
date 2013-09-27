@@ -3,6 +3,8 @@ package com.imaginea.serverlocator.impl;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.net.Socket;
+import java.util.Arrays;
 
 import org.apache.log4j.Logger;
 
@@ -15,36 +17,44 @@ public class MySQLLocator implements ServerLocator,ApplicationConstants{
 
 	PacketBuffer bufferPacket = null;
 	static Logger log = Logger.getLogger(MySQLLocator.class);
-	private int connectionTimeOut = DB_SERVER_TIME_OUT_PERIOD;
 	
 	@Override
 	public ServerProperties parseToServerProp(InetAddress iNetAddr, int port, boolean isLimitedTimeOut) {
 			log.debug("********** Entered into MySQLLocator --> parseToServerProp() ********");
 			try {
-				DataInputStream dInStream = null;
+				Socket socket = null;
+				int connectionTimeOut = isLimitedTimeOut ? MYSQL_SERVER_MIN_TIME_OUT_PERIOD : MYSQL_SERVER_MAX_TIME_OUT_PERIOD;
 				try{
-					dInStream = Utils.getDataInStreamFromServer(iNetAddr, port,connectionTimeOut,isLimitedTimeOut);
+					socket = Utils.getClientSocket(iNetAddr, port, connectionTimeOut);
+					DataInputStream dInStream = Utils.getDataInStreamFromServer(socket);
+					bufferPacket = getDataPacket(dInStream);
+					if(bufferPacket != null){
+						log.debug("MYSql DB Response "+Arrays.toString(bufferPacket.getPacket()));						
+					}else{
+						return null;
+					}
 				}catch(IOException e){
-					log.error("Unable to get DataInputStream",e);
+					log.debug("Unable to get DataInputStream",e);
 					return null;
-				}				
-				bufferPacket = getDataPacket(dInStream);
-				dInStream.close();
-				if(bufferPacket == null)
-					return null;				
+				}finally{
+					if(socket != null){
+						socket.close();
+					}						
+				}
+				
 				bufferPacket.skipByte(1);
-				//TODO Need to replicate issue
 				byte protocolVersion = bufferPacket.readByte();
-				if(protocolVersion == -1){
+				if(protocolVersion < 0){
 					log.error("Parsed data identifies error result");
 					return null;						 
 				}
 				String version = bufferPacket.readString();
+				log.debug("Parsed version of MySQL is"+version);
 				if(!isValidVersion(version)){
-					log.error("Version data from DataStream validation failed");
+					log.debug("Version data from DataStream validation failed");
 					return null;
 				}
-							
+				
 				ServerProperties serverProp = new ServerProperties();
 				serverProp.setServerName(ServersEnum.MY_SQL.toString());
 				serverProp.setVersion(version);
@@ -58,6 +68,7 @@ public class MySQLLocator implements ServerLocator,ApplicationConstants{
 	
 		
 	private boolean isValidVersion(String version){
+		log.debug("********** Entered into MySQLLocator --> isValidVersion() ********");
 		byte[] versionBytes = version.getBytes();
 		for(byte versionByte: versionBytes){
 			if((!(versionByte > 47 && versionByte < 58) && versionByte != 46))
@@ -69,21 +80,25 @@ public class MySQLLocator implements ServerLocator,ApplicationConstants{
 	private PacketBuffer getDataPacket(DataInputStream dInStream) throws IOException {
 		log.debug("********** Entered into MySQLLocator --> getDataPacket() ********");
 		byte[] packetLengthInBytes = new byte[3];
-		int noOfLengthBytes = dInStream.read(packetLengthInBytes, 0, 3);
-		if(PacketBuffer.validateInt(packetLengthInBytes) || noOfLengthBytes < 3){
-			log.error("Unable to parse socket output as MySQL response");
+		try {
+			Utils.readBytesFromStream(dInStream, packetLengthInBytes, 0, 3);
+		} catch (Exception e) {
 			return null;
-		}			
+		}
+		if(PacketBuffer.isInvalidInt(packetLengthInBytes)){
+			log.debug("Unable to parse socket output as MySQL response");
+			return null;
+		}
 		
-		int packetLength = (packetLengthInBytes[0] & 0xff) +
-		((packetLengthInBytes[1] & 0xff) << 8) +
+		int packetLength = (packetLengthInBytes[0] & 0xff) |
+		((packetLengthInBytes[1] & 0xff) << 8) |
 		((packetLengthInBytes[2] & 0xff) << 16);
 		byte[] bytePacket = new byte[packetLength+1];
 		log.debug("Packet data read from stream is "+ packetLength);
 		int noOfPacktetBytes = dInStream.read(bytePacket, 0, packetLength);
-		log.debug("Byte data from DataStream is "+bytePacket);
+		log.debug("Byte data from DataStream is "+ bytePacket);
 		if(noOfPacktetBytes != packetLength){
-			log.error("Unable to parse socket output as MySQL response");
+			log.debug("Unable to parse socket output as MySQL response");
 			return null;
 		}			
 		return  new PacketBuffer(bytePacket);
