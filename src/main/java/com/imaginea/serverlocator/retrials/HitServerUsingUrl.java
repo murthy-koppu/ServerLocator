@@ -1,6 +1,4 @@
 package com.imaginea.serverlocator.retrials;
-import java.io.DataInputStream;
-import java.io.PrintStream;
 import java.net.URL;
 import java.net.URLConnection;
 

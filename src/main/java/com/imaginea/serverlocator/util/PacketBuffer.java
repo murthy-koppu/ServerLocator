@@ -3,7 +3,6 @@ package com.imaginea.serverlocator.util;
 
 public class PacketBuffer {
 	private int packetPosition = -1;
-	private int packetLen = -1;
 	private byte[] packet = null;
 	
 	public byte[] getPacket() {

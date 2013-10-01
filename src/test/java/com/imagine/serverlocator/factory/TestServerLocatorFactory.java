@@ -1,6 +1,6 @@
 package com.imagine.serverlocator.factory;
 
-import junit.framework.Assert;
+import static junit.framework.Assert.assertEquals;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -12,48 +12,44 @@ import com.imaginea.serverlocator.util.ServersEnum;
 
 public class TestServerLocatorFactory {
 
-	@Before
-	public void setUp() throws Exception {
-	}
-
-	@Test
+	//@Test
 	public void testGetServerLocatorStringIntMySQL() {
 		String hostAddress = "localhost";
 		ServerProperties serverProp = ServerLocatorFactory.getServerLocator(hostAddress,3306);
-		Assert.assertEquals(serverProp.getConnectionStatus(), ConnectionProperties.SERVER_LISTENING);
-		Assert.assertEquals(serverProp.getHostName(), hostAddress);
-		Assert.assertEquals(serverProp.getPortNo(), 3306);
-		Assert.assertEquals(serverProp.getServerName(), ServersEnum.MY_SQL.toString());
-		Assert.assertEquals(serverProp.getVersion(), "5.5.27");		
+		assertEquals(serverProp.getConnectionStatus(), ConnectionProperties.SERVER_LISTENING);
+		assertEquals(serverProp.getHostName(), hostAddress);
+		assertEquals(serverProp.getPortNo(), 3306);
+		assertEquals(serverProp.getServerName(), ServersEnum.MY_SQL.toString());
+		assertEquals(serverProp.getVersion(), "5.5.27");		
 	}
 	
-	@Test
+	//@Test
 	public void testGetServerLocatorStringIntFailOnIp() {
-		String hostAddress = "localhos";
+		String hostAddress = "wronghost";
 		ServerProperties serverProp = ServerLocatorFactory.getServerLocator(hostAddress,3306);
-		Assert.assertEquals(serverProp.getConnectionStatus(), ConnectionProperties.HOST_UNREACHABLE);
+		assertEquals(serverProp.getConnectionStatus(), ConnectionProperties.HOST_UNREACHABLE);
 	}
 	
-	@Test
+	//@Test
 	public void testGetServerLocatorStringIntAppServer() {
 		String hostAddress = "localhost";
 		int port = 8080;
 		ServerProperties serverProp = ServerLocatorFactory.getServerLocator(hostAddress,port);
-		Assert.assertEquals(serverProp.getConnectionStatus(), ConnectionProperties.SERVER_LISTENING);
-		Assert.assertEquals(serverProp.getHostName(), hostAddress);
-		Assert.assertEquals(serverProp.getPortNo(), port);
-		Assert.assertEquals(serverProp.getServerName(), "Apache-Coyote/1.1");
+		assertEquals(serverProp.getConnectionStatus(), ConnectionProperties.SERVER_LISTENING);
+		assertEquals(serverProp.getHostName(), hostAddress);
+		assertEquals(serverProp.getPortNo(), port);
+		assertEquals(serverProp.getServerName(), "Apache-Coyote/1.1");
 	}
 	
-	@Test
+	//@Test
 	public void testGetServerLocatorStringIntOracle() {
 		String hostAddress = "127.0.0.1";
-		int port = 9005;
+		int port = 1521;
 		ServerProperties serverProp = ServerLocatorFactory.getServerLocator(hostAddress,port);
-		Assert.assertEquals(serverProp.getConnectionStatus(), ConnectionProperties.SERVER_LISTENING);
-		Assert.assertEquals(serverProp.getHostName(), hostAddress);
-		Assert.assertEquals(serverProp.getPortNo(), port);
-		Assert.assertEquals(serverProp.getServerName(), "Oracle Database");
+		assertEquals(serverProp.getConnectionStatus(), ConnectionProperties.SERVER_LISTENING);
+		assertEquals(serverProp.getHostName(), hostAddress);
+		assertEquals(serverProp.getPortNo(), port);
+		assertEquals(serverProp.getServerName(), ServersEnum.ORACLE_DB.toString());
 	}
 
 

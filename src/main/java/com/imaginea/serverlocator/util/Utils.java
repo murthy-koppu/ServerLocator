@@ -43,7 +43,7 @@ public class Utils {
 			int connectionTimeOut) throws IOException, SocketException {
 		Socket clientSocket = new Socket(iNetAddr,port);
 		clientSocket.setSoTimeout(connectionTimeOut);
-		clientSocket.setKeepAlive(true);
+//		clientSocket.setKeepAlive(true);
 		return clientSocket;
 	}
 

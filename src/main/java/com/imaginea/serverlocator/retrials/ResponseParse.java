@@ -2,13 +2,7 @@ package com.imaginea.serverlocator.retrials;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketAddress;
-import java.net.URL;
 
 
 public class ResponseParse {
