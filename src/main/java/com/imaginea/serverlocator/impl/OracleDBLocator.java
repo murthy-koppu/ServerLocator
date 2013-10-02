@@ -112,16 +112,7 @@ public class OracleDBLocator implements ServerLocator,ApplicationConstants{
 			if(headerInBytes[2] != (byte)4 && headerInBytes[2] != (byte)5){
 				log.debug("Invalid message from DB Server expected error index since input passed without SID");
 				return false;
-			}
-			/*if(headerInBytes[2] == 4){
-				byte[] errorStackInBytes = new byte[responseLength - 12];
-				Utils.readBytesFromStream(dataInStream, errorStackInBytes, 0, responseLength - 12);
-				String errorStackBuffer = new String(errorStackInBytes);
-				if(!errorStackBuffer.contains("ERROR")){
-					log.error("Invalid message from DB Server expected error index since input passed without SID");
-					return false;
-				}
-			}*/	
+			}	
 		} catch (IOException e) {
 			log.debug("Unable to get message from DB Server"+e);
 			return false;
@@ -152,7 +143,6 @@ public class OracleDBLocator implements ServerLocator,ApplicationConstants{
 			}
 		}
 		log.debug("Buffer Data to be passed to Server "+ Arrays.toString(bufferData));
-		log.debug("********** Exiting OracleDBLocator --> fillBufferData() ********");
 	}
 	
 	private void getAddressData(InetAddress iNetAddr, int port){
@@ -162,7 +152,6 @@ public class OracleDBLocator implements ServerLocator,ApplicationConstants{
 		addressData = new byte[netPropData.length()+24];
 		netPropData.toString().getBytes(0, netPropData.length(), addressData, 24);
 		log.debug("Address Data to be passed to Server "+ Arrays.toString(addressData));
-		log.debug("********** Exiting OracleDBLocator --> getAddressData() ********");
 	}
 	
 }
