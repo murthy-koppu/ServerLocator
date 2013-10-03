@@ -37,7 +37,7 @@
 				<configuration>
 					<archive>
 						<manifest>
-							<mainClass>com.imaginea.serverlocator.LocationAddrToJson</mainClass>
+							<mainClass>com.imaginea.serverlocator.NetStatSysProcessUtil</mainClass>
 						</manifest>
 					</archive>
 					<descriptorRefs>

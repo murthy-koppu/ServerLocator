@@ -35,7 +35,6 @@ public class LocationAddrToJson {
 			localIps.add(InetAddress.getLocalHost().toString().split("/")[0]);
 			localIps.add(InetAddress.getLocalHost().toString().split("/")[1]);
 		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

@@ -12,7 +12,7 @@ import com.imaginea.serverlocator.util.ServersEnum;
 
 public class TestServerLocatorFactory {
 
-	//@Test
+	@Test
 	public void testGetServerLocatorStringIntMySQL() {
 		String hostAddress = "localhost";
 		ServerProperties serverProp = ServerLocatorFactory.getServerLocator(hostAddress,3306);
@@ -23,14 +23,14 @@ public class TestServerLocatorFactory {
 		assertEquals(serverProp.getVersion(), "5.5.27");		
 	}
 	
-	//@Test
+	@Test
 	public void testGetServerLocatorStringIntFailOnIp() {
 		String hostAddress = "wronghost";
 		ServerProperties serverProp = ServerLocatorFactory.getServerLocator(hostAddress,3306);
 		assertEquals(serverProp.getConnectionStatus(), ConnectionProperties.HOST_UNREACHABLE);
 	}
 	
-	//@Test
+	@Test
 	public void testGetServerLocatorStringIntAppServer() {
 		String hostAddress = "localhost";
 		int port = 8080;
@@ -41,7 +41,7 @@ public class TestServerLocatorFactory {
 		assertEquals(serverProp.getServerName(), "Apache-Coyote/1.1");
 	}
 	
-	//@Test
+	@Test
 	public void testGetServerLocatorStringIntOracle() {
 		String hostAddress = "127.0.0.1";
 		int port = 1521;

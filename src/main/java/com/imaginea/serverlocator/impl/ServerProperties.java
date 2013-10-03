@@ -12,6 +12,14 @@ public class ServerProperties {
 	private Properties otherProperties = new Properties();
 	private ConnectionProperties connectionStatus = ConnectionProperties.HOST_UNREACHABLE;
 	
+	@Override
+	public String toString() {
+		return "ServerProperties [hostName=" + hostName + ", portNo=" + portNo
+				+ ", version=" + version + ", serverName=" + serverName
+				+ ", otherProperties=" + otherProperties
+				+ ", connectionStatus=" + connectionStatus + "]";
+	}
+
 	public ServerProperties() {
 	}
 
