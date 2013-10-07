@@ -10,11 +10,12 @@ public class SocketModel {
 	private int port;
 	private boolean isAllPorts;
 	private boolean isAllIps;
-	private boolean isLocalIp;	
-	
-	public SocketModel(String ipAddress, String port, Set<String> localIps) throws Exception {
+	private boolean isLocalIp;
+
+	public SocketModel(String ipAddress, String port, boolean isLocalIp)
+			throws Exception {
 		super();
-		setIpAddress(ipAddress, localIps);
+		setIpAddress(ipAddress, isLocalIp);
 		setPort(port);
 	}
 
@@ -22,9 +23,8 @@ public class SocketModel {
 		return ipAddress;
 	}
 
-	public void setIpAddress(String ipAddress, Set<String> localIps) {
-		if(localIps.contains(ipAddress))
-			isLocalIp = true;
+	public void setIpAddress(String ipAddress, boolean isLocalIp) {
+		this.isLocalIp = isLocalIp;
 		this.ipAddress = ipAddress;
 	}
 
@@ -35,18 +35,18 @@ public class SocketModel {
 	public void setPort(int port) {
 		this.port = port;
 	}
-	
-	public void setPort(String port) throws Exception{
-		try{
-			if(port.equals("*")){
-				this.port = -1;
+
+	public void setPort(String port) throws Exception {
+		try {
+			if (port.equals("*")) {
+				this.port = Integer.MAX_VALUE;
 				this.isAllPorts = true;
-			}else				
+			} else
 				this.port = Integer.parseInt(port);
-		}catch(Exception e){
-			log.error("Invalid Port Number parsed "+e);
+		} catch (Exception e) {
+			log.error("Invalid Port Number parsed " + e);
 			throw e;
-		}		
+		}
 	}
 
 	public boolean isAllPorts() {
@@ -72,6 +72,5 @@ public class SocketModel {
 	public void setLocalIp(boolean isLocalIp) {
 		this.isLocalIp = isLocalIp;
 	}
-	
 
 }

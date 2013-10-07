@@ -1,5 +1,8 @@
 package com.imaginea.serverlocator.util;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public interface ApplicationConstants {
 	 public static final int MILLIS_PER_SECOND = 1000;
 	 public static final String WEB_SERVER_HEADER_NAME = "Server";
@@ -10,4 +13,6 @@ public interface ApplicationConstants {
 	 public static final int APP_SERVER_MIN_TIME_OUT_PERIOD = 5 * MILLIS_PER_SECOND;
 	 public static final int APP_SERVER_MAX_TIME_OUT_PERIOD = 10 * MILLIS_PER_SECOND;
 	 public static final String NET_STAT_PROCESS_COMMUNICATION_STATE = "LISTEN";
+	 public static final String IPV6_REPRESENTATION_START_SUB_STRING = "::ffff:";
+
 }

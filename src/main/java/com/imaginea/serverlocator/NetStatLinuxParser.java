@@ -1,58 +1,45 @@
 package com.imaginea.serverlocator;
 
-import java.net.Inet4Address;
-import java.net.Inet6Address;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import org.apache.log4j.Logger;
+
+import com.imaginea.serverlocator.util.ApplicationConstants;
 import com.imaginea.serverlocator.util.NetStatProcessModel;
 import com.imaginea.serverlocator.util.SocketModel;
+import com.imaginea.serverlocator.util.Utils;
 
-public class NetStatLinuxParser {
+public class NetStatLinuxParser implements ApplicationConstants{
 	private static Logger log = Logger.getLogger(NetStatLinuxParser.class);
 	List<NetStatProcessModel> lsNetStatRecs = new ArrayList<NetStatProcessModel>();
 	Set<String> localIps = new HashSet<String>();
-
-	{
-		localIps.add("127.0.0.1");
-		localIps.add("0.0.0.0");
-		localIps.add("localhost");
-		localIps.add(":::");
-		try {
-			String[] strIP4LocAddr = Inet4Address.getLocalHost().toString()
-					.split("/");
-			if (strIP4LocAddr != null && strIP4LocAddr[0] != null
-					&& !strIP4LocAddr[0].trim().isEmpty()) {
-				localIps.add(strIP4LocAddr[0]);
-				if (strIP4LocAddr.length == 2 && strIP4LocAddr[1] != null
-						&& !strIP4LocAddr[1].trim().isEmpty()) {
-					localIps.add("::ffff:" + strIP4LocAddr[1]);
-					localIps.add(strIP4LocAddr[1]);
-				}
-			}
-			String[] strIP6LocAddr = Inet6Address.getLocalHost().toString()
-					.split("/");
-			if (strIP6LocAddr != null && strIP6LocAddr[0] != null
-					&& !strIP6LocAddr[0].trim().isEmpty()) {
-				localIps.add(strIP6LocAddr[0]);
-				if (strIP6LocAddr.length == 2 && strIP6LocAddr[1] != null
-						&& !strIP6LocAddr[1].trim().isEmpty()) {
-					localIps.add(strIP6LocAddr[1]);
-				}
-			}
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		}
+	//Set<String> defaultLocalIps = new HashSet<String>();
+	private String systemIpAddr = null;
+	public NetStatLinuxParser() {
+		localIps.addAll(Utils.getDefaultLocalIps());
 	}
 
-	public List<NetStatProcessModel> getNetStatRecords(String netStatInput) throws Exception {
+/*	private void initializeLocalIps() {
+		defaultLocalIps.add("127.0.0.1");
+		defaultLocalIps.add("0.0.0.0");
+		defaultLocalIps.add("localhost");
+		defaultLocalIps.add(":::");
+		localIps.addAll(defaultLocalIps);
+	}*/
+
+	public List<NetStatProcessModel> getNetStatRecords(String netStatInput)
+			throws Exception {
 		String[] netStatRecords = netStatInput.split(";");
-		for(String netStatRecord : netStatRecords)
+		for (String netStatRecord : netStatRecords)
 			parseNetStatRecord(netStatRecord);
+		/*localIps.removeAll(defaultLocalIps);
+		for(String ipAddress : localIps){
+			
+		}*/
+		
 		return lsNetStatRecs;
 	}
 
@@ -65,19 +52,25 @@ public class NetStatLinuxParser {
 			String[] processDtls = netStatAttribs[3].split("/");
 
 			int ipAddrBound = strLocalSkt.lastIndexOf(":");
-			
+
 			SocketModel localSktMdl = new SocketModel(strLocalSkt.substring(0,
-					ipAddrBound), strLocalSkt.substring(ipAddrBound + 1),
-					localIps);
-			
-			ipAddrBound = strForeignSocket.lastIndexOf(":");
-			SocketModel foreignSktMdl = new SocketModel(strForeignSocket.substring(0,
-					ipAddrBound), strForeignSocket.substring(ipAddrBound + 1),
-					localIps);
-			if(!isInternalProcess(localSktMdl, connectionState)){
-				NetStatProcessModel netStatRec = new NetStatProcessModel(processDtls[1], connectionState, processDtls[0], localSktMdl, foreignSktMdl);
-				lsNetStatRecs.add(netStatRec);
-			}			
+					ipAddrBound), strLocalSkt.substring(ipAddrBound + 1), true);
+			localIps.add(localSktMdl.getIpAddress());
+
+			if (!isInternalProcess(localSktMdl)) {
+				ipAddrBound = strForeignSocket.lastIndexOf(":");
+				SocketModel foreignSktMdl = new SocketModel(
+						strForeignSocket.substring(0, ipAddrBound),
+						strForeignSocket.substring(ipAddrBound + 1), false);
+
+				if (NET_STAT_PROCESS_COMMUNICATION_STATE.equals(connectionState) || !isInternalProcess(foreignSktMdl)) {
+					NetStatProcessModel netStatRec = new NetStatProcessModel(
+							processDtls[1], connectionState, processDtls[0],
+							localSktMdl, foreignSktMdl);
+					lsNetStatRecs.add(netStatRec);
+				}
+			}
+
 		} catch (Exception e) {
 			log.error("Unable to parse NetStat Record " + netStatRecord);
 			throw e;
@@ -85,10 +78,9 @@ public class NetStatLinuxParser {
 
 	}
 
-	private boolean isInternalProcess(SocketModel sktMdlIn,
-			String connectionState) {
-		return ((sktMdlIn.isLocalIp() && sktMdlIn.getPort() < 1025)
-				|| sktMdlIn.isAllPorts()) ? true : false;
+	private boolean isInternalProcess(SocketModel sktMdlIn) {
+		return (sktMdlIn.getPort() < 1025 || sktMdlIn.isAllPorts()) ? true
+				: false;
 	}
 
 }
