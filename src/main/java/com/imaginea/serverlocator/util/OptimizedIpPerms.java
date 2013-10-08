@@ -1,6 +1,5 @@
 package com.imaginea.serverlocator.util;
 
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -9,31 +8,66 @@ import java.util.Map;
 import java.util.Set;
 
 import com.amazonaws.services.ec2.model.IpPermission;
+import com.amazonaws.services.ec2.model.UserIdGroupPair;
 
 public class OptimizedIpPerms {
 	//private String ipAddress = "";
 	/*
 	 * private int fromPort = -1; private int toPort = -1;
 	 */
+	private Set<String> associatedSGroupIds = new HashSet<String>();
 	private Map<String, List<PermissibleSocketModel>> permissibleSktsToProtocol = new HashMap<String, List<PermissibleSocketModel>>();
-	
-	private String protocol;
-	List<PermissibleSocketModel> permissibleSkts = new ArrayList<PermissibleSocketModel>();
+	private boolean isAllIps = false;
 
-	private void merge(IpPermission inIpPermission) {
-		List<PermissibleSocketModel> permissibleSockets = permissibleSktsToProtocol.get(inIpPermission.getIpProtocol());
-		boolean isMerged = false;
-		if(permissibleSockets != null){
-			for(int k=0; k  < permissibleSockets.size() && !isMerged; k++){
-				isMerged = mergeOnIPAddress(permissibleSockets.get(k), inIpPermission);		
+	public boolean isAllIps() {
+		return isAllIps;
+	}
+
+	public void setAllIps(boolean isAllIps) {
+		this.isAllIps = isAllIps;
+	}
+
+	public Set<String> getAssociatedSGroupIds() {
+		return associatedSGroupIds;
+	}
+
+	public Map<String, List<PermissibleSocketModel>> getPermissibleSktsToProtocol() {
+		return permissibleSktsToProtocol;
+	}
+
+	public void merge(IpPermission inIpPermission) {
+		List<UserIdGroupPair> lsAssocUserSGroups = inIpPermission.getUserIdGroupPairs();
+		if(lsAssocUserSGroups != null && !lsAssocUserSGroups.isEmpty()){
+			for(UserIdGroupPair assocSGroup: lsAssocUserSGroups){
+				if(assocSGroup.getUserId().trim().toUpperCase().equals(LoadAWSConfigUtility.getAccountId().trim().toUpperCase())){
+					System.out.println("Added groupIds "+assocSGroup.getGroupId());
+					associatedSGroupIds.add(assocSGroup.getGroupId());
+				}					
 			}
-		}
-		if(permissibleSockets == null || !isMerged){			
-			if(permissibleSockets == null){
-				permissibleSockets = new ArrayList<PermissibleSocketModel>();
+		}else{
+			List<PermissibleSocketModel> permissibleSockets = permissibleSktsToProtocol.get(inIpPermission.getIpProtocol());
+			boolean isMerged = false;
+			if(inIpPermission.getIpRanges() == null || inIpPermission.getIpRanges().isEmpty())
+				return;
+			if(permissibleSockets != null){
+				for(int k=0; k  < permissibleSockets.size() && !isMerged; k++){
+					{
+						PermissibleSocketModel permissibleIpSkt = permissibleSockets.get(k);
+						if((permissibleIpSkt.getIpAddress()+"/"+permissibleIpSkt.getSubNetMask()).equals(inIpPermission.getIpRanges().get(0))){
+							permissibleIpSkt.addToPermissiblePorts(inIpPermission.getFromPort(), inIpPermission.getToPort());
+							isMerged = true;
+						}
+					}
+				}
 			}
-			permissibleSockets.add(new PermissibleSocketModel(inIpPermission));
-		}
+			if(permissibleSockets == null || !isMerged){			
+				if(permissibleSockets == null){
+					permissibleSockets = new ArrayList<PermissibleSocketModel>();
+					permissibleSktsToProtocol.put(inIpPermission.getIpProtocol(), permissibleSockets);
+				}
+				permissibleSockets.add(new PermissibleSocketModel(inIpPermission));
+			}
+		}		
 	}
 	
 	private boolean mergeOnIPAddress(PermissibleSocketModel existingSkt, IpPermission newIpPerms) {
@@ -151,13 +185,4 @@ public class OptimizedIpPerms {
 			}
 		}
 	}*/
-
-	public String getProtocol() {
-		return protocol;
-	}
-
-	public void setProtocol(String protocol) {
-		this.protocol = protocol;
-	}
-
 }

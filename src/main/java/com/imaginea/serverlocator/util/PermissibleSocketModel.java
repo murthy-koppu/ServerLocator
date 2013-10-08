@@ -1,16 +1,24 @@
 package com.imaginea.serverlocator.util;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 import com.amazonaws.services.ec2.model.IpPermission;
 
 public class PermissibleSocketModel {
-	private String ipAddress = "0.0.0.0";
-	private int subNetMask = 0;
+	private String ipAddress = "255.255.255.255";
+	private int subNetMask = -1;
 	private boolean isAllPorts;
 	private boolean[] isAllowedPort = new boolean[65536];
-	
+	private boolean isAllIps;
+
+	@Override
+	public String toString() {
+		return "PermissibleSocketModel [ipAddress=" + ipAddress
+				+ ", subNetMask=" + subNetMask + ", isAllPorts=" + isAllPorts
+				+ ", isAllowedPort=" + Arrays.toString(isAllowedPort)
+				+ ", isAllIps=" + isAllIps + "]";
+	}
+
 	public String getIpAddress() {
 		return ipAddress;
 	}
@@ -29,29 +37,44 @@ public class PermissibleSocketModel {
 
 	public PermissibleSocketModel(IpPermission ipPermission) {
 		super();
+		initializeIpAddress(ipPermission);
+		addToPermissiblePorts(ipPermission.getFromPort(),
+				ipPermission.getToPort());
+	}
+
+	private void initializeIpAddress(IpPermission ipPermission) {
 		String[] ipAndSubnetArr = ipPermission.getIpRanges().get(0).split("/");
 		this.subNetMask = Integer.parseInt(ipAndSubnetArr[1]);
 		this.ipAddress = ipAndSubnetArr[0];
-		if (ipPermission.getFromPort() == -1) {
-			isAllPorts = true;
-		}else{
-			addToPermissiblePorts(ipPermission.getFromPort(),ipPermission.getToPort());
-		}
-		
-	}
-	
-	public void addToPermissiblePorts(int fromPort, int toPort){
-		for(int k=fromPort; k <= fromPort; k++){
-			isAllowedPort[k] = true;
+		if(this.subNetMask == 0){
+			isAllIps = true;
 		}
 	}
 
-	public boolean isAllowedPort(int queriedPort){
+	public void addToPermissiblePorts(int fromPort, int toPort) {
+		if (fromPort == -1) {
+			isAllPorts = true;
+		} else {
+			for (int k = fromPort; k <= fromPort; k++) {
+				isAllowedPort[k] = true;
+			}
+		}
+	}
+
+	public boolean isAllowedPort(int queriedPort) {
 		return isAllowedPort[queriedPort];
 	}
-	
+
 	public boolean isAllPorts() {
 		return isAllPorts;
+	}
+
+	public boolean isAllIps() {
+		return isAllIps;
+	}
+
+	public void setAllIps(boolean isAllIps) {
+		this.isAllIps = isAllIps;
 	}
 
 }
