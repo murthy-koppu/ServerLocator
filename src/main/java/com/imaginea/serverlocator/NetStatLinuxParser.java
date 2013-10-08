@@ -7,9 +7,9 @@ import java.util.Set;
 
 import org.apache.log4j.Logger;
 
+import com.imaginea.serverlocator.model.NetStatProcessModel;
+import com.imaginea.serverlocator.model.NetStatSocketModel;
 import com.imaginea.serverlocator.util.ApplicationConstants;
-import com.imaginea.serverlocator.util.NetStatProcessModel;
-import com.imaginea.serverlocator.util.SocketModel;
 import com.imaginea.serverlocator.util.Utils;
 
 public class NetStatLinuxParser implements ApplicationConstants{
@@ -53,13 +53,13 @@ public class NetStatLinuxParser implements ApplicationConstants{
 
 			int ipAddrBound = strLocalSkt.lastIndexOf(":");
 
-			SocketModel localSktMdl = new SocketModel(strLocalSkt.substring(0,
+			NetStatSocketModel localSktMdl = new NetStatSocketModel(strLocalSkt.substring(0,
 					ipAddrBound), strLocalSkt.substring(ipAddrBound + 1), true);
 			localIps.add(localSktMdl.getIpAddress());
 
 			if (!isInternalProcess(localSktMdl)) {
 				ipAddrBound = strForeignSocket.lastIndexOf(":");
-				SocketModel foreignSktMdl = new SocketModel(
+				NetStatSocketModel foreignSktMdl = new NetStatSocketModel(
 						strForeignSocket.substring(0, ipAddrBound),
 						strForeignSocket.substring(ipAddrBound + 1), false);
 
@@ -78,7 +78,7 @@ public class NetStatLinuxParser implements ApplicationConstants{
 
 	}
 
-	private boolean isInternalProcess(SocketModel sktMdlIn) {
+	private boolean isInternalProcess(NetStatSocketModel sktMdlIn) {
 		return (sktMdlIn.getPort() < 1025 || sktMdlIn.isAllPorts()) ? true
 				: false;
 	}

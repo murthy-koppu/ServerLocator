@@ -1,4 +1,4 @@
-package com.imaginea.aws.firewalls;
+package com.imaginea.serverlocator.util;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -18,24 +18,28 @@ import com.amazonaws.services.ec2.model.InstanceStateName;
 import com.amazonaws.services.ec2.model.IpPermission;
 import com.amazonaws.services.ec2.model.Reservation;
 import com.amazonaws.services.ec2.model.SecurityGroup;
-import com.imaginea.serverlocator.util.OptimizedIpPerms;
-import com.imaginea.serverlocator.util.LoadAWSConfigUtility;
-import com.imaginea.serverlocator.util.PermissibleSocketModel;
+import com.imaginea.serverlocator.model.OptimizedIpPerms;
+import com.imaginea.serverlocator.model.PermissibleSocketModel;
 
-public class InstanceUtil {
+public class AWSInstanceUtil {
 	Map<String, SecurityGroup> mapSGroupsWithId = new HashMap<String, SecurityGroup>();
 	Map<Instance, OptimizedIpPerms> ipPermsToEachInstance = new HashMap<Instance, OptimizedIpPerms>();
 	List<Instance> lsInstances = new ArrayList<Instance>();
 	static final int START_POINT_ACCESS_PORT = 80;
 
 	public static void main(String[] args) {
-		InstanceUtil obj = new InstanceUtil();
+		AWSInstanceUtil obj = new AWSInstanceUtil();
 		obj.getEC2Instances();
-		System.out.println(obj.findStartPointInstances());
-		obj.publishInstanceConnectionsToJson();
+		System.out.println(obj.publishInstanceConnectionsToJson());
+	}
+	
+	public String getInstanceRelationsInJson(){
+		AWSInstanceUtil obj = new AWSInstanceUtil();
+		obj.getEC2Instances();
+		return obj.publishInstanceConnectionsToJson().toString();
 	}
 
-	public void publishInstanceConnectionsToJson() {
+	public JSONObject publishInstanceConnectionsToJson() {
 		JSONObject rootInstanceRel = new JSONObject();
 		Instance instance = null;
 		for (int k = 0; k < lsInstances.size(); k++) {
@@ -65,7 +69,7 @@ public class InstanceUtil {
 				e.printStackTrace();
 			}
 		}
-		System.out.println(rootInstanceRel.toString());
+		return rootInstanceRel;
 	}
 
 	public void getEC2Instances() {
@@ -76,7 +80,12 @@ public class InstanceUtil {
 		if (instancesResult != null
 				&& instancesResult.getReservations() != null) {
 			for (Reservation reservation : instancesResult.getReservations()) {
-				lsInstances.addAll(reservation.getInstances());
+				for(Instance instanceFromReserv:reservation.getInstances()){
+					if(instanceFromReserv.getState().getName().equals(InstanceStateName.Running.toString())){
+						lsInstances.add(instanceFromReserv);
+					}
+				}
+				
 			}
 		}
 		for (Instance instance : lsInstances) {

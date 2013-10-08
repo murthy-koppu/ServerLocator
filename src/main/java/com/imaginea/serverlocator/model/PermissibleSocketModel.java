@@ -1,4 +1,4 @@
-package com.imaginea.serverlocator.util;
+package com.imaginea.serverlocator.model;
 
 import java.util.Arrays;
 

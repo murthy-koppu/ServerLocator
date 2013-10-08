@@ -1,18 +1,18 @@
-package com.imaginea.serverlocator.util;
+package com.imaginea.serverlocator.model;
 
 import java.util.Set;
 
 import org.apache.log4j.Logger;
 
-public class SocketModel {
-	private static Logger log = Logger.getLogger(SocketModel.class);
+public class NetStatSocketModel {
+	private static Logger log = Logger.getLogger(NetStatSocketModel.class);
 	private String ipAddress;
 	private int port;
 	private boolean isAllPorts;
 	private boolean isAllIps;
 	private boolean isLocalIp;
 
-	public SocketModel(String ipAddress, String port, boolean isLocalIp)
+	public NetStatSocketModel(String ipAddress, String port, boolean isLocalIp)
 			throws Exception {
 		super();
 		setIpAddress(ipAddress, isLocalIp);

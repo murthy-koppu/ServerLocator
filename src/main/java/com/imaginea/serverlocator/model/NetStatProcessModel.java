@@ -1,4 +1,4 @@
-package com.imaginea.serverlocator.util;
+package com.imaginea.serverlocator.model;
 
 public class NetStatProcessModel {
 	private String localIp;
@@ -8,11 +8,11 @@ public class NetStatProcessModel {
 	private int localPort;
 	private int foreignPort;
 	private int processId;
-	private SocketModel localSkt;
-	private SocketModel foreignSkt;
+	private NetStatSocketModel localSkt;
+	private NetStatSocketModel foreignSkt;
 
 	public NetStatProcessModel(String processName, String state, String processId,
-			SocketModel localSkt, SocketModel foreignSkt) {
+			NetStatSocketModel localSkt, NetStatSocketModel foreignSkt) {
 		super();
 		this.processName = processName;
 		this.state = state;
@@ -85,19 +85,19 @@ public class NetStatProcessModel {
 		}
 	}
 	
-	public SocketModel getLocalSkt() {
+	public NetStatSocketModel getLocalSkt() {
 		return localSkt;
 	}
 
-	public void setLocalSkt(SocketModel localSkt) {
+	public void setLocalSkt(NetStatSocketModel localSkt) {
 		this.localSkt = localSkt;
 	}
 
-	public SocketModel getForeignSkt() {
+	public NetStatSocketModel getForeignSkt() {
 		return foreignSkt;
 	}
 
-	public void setForeignSkt(SocketModel foreignSkt) {
+	public void setForeignSkt(NetStatSocketModel foreignSkt) {
 		this.foreignSkt = foreignSkt;
 	}
 
