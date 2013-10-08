@@ -11,11 +11,11 @@ import com.amazonaws.services.ec2.model.GroupIdentifier;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.Reservation;
 import com.amazonaws.services.ec2.model.SecurityGroup;
-import com.imaginea.serverlocator.util.IpPermsSGModel;
+import com.imaginea.serverlocator.util.IpPermsUtil;
 import com.imaginea.serverlocator.util.LoadAWSConfigUtility;
 
 public class InstanceUtil {
-	
+	Map<String,SecurityGroup> mapSGroupsWithId = new HashMap<String, SecurityGroup>();
 	public List<Instance> getEC2Instances(){
 		List<Instance> lsInstances = new ArrayList<Instance>();
 		DescribeInstancesResult instancesResult = LoadAWSConfigUtility.getAmazonEC2().describeInstances();
@@ -27,20 +27,25 @@ public class InstanceUtil {
 		return lsInstances;
 	}
 	
-	public Map<String,SecurityGroup> loadSecurityGroups(){
+	public void loadSecurityGroups(){
 		DescribeSecurityGroupsResult securityGroupRslt =  LoadAWSConfigUtility.getAmazonEC2().describeSecurityGroups();
-		if(securityGroupRslt != null && securityGroupRslt.getSecurityGroups() != null && !securityGroupRslt.getSecurityGroups().isEmpty()){
-			Map<String,SecurityGroup> mapSGroupsWithId = new HashMap<String, SecurityGroup>();
+		if(securityGroupRslt != null && securityGroupRslt.getSecurityGroups() != null && !securityGroupRslt.getSecurityGroups().isEmpty()){			
 			for(SecurityGroup sGroup: securityGroupRslt.getSecurityGroups()){
 				mapSGroupsWithId.put(sGroup.getGroupId(), sGroup);
 			}
 		}
-		return null;
 	}
 	
-	public List<IpPermsSGModel> getPermissibleIpPermsForInstance(Instance instance){
-		List<IpPermsSGModel> permissibleIPPermsSGModels = new ArrayList<IpPermsSGModel>();
+	
+	
+	public List<IpPermsUtil> getPermissibleIpPermsForInstance(Instance instance){
+		List<IpPermsUtil> permissibleIPPermsSGModels = new ArrayList<IpPermsUtil>();
 		List<GroupIdentifier> instanceSGroupIdentifiers = instance.getSecurityGroups();
+		
+		for(GroupIdentifier sGroupIdentifier: instanceSGroupIdentifiers){
+			SecurityGroup instSGroup = mapSGroupsWithId.get(sGroupIdentifier.getGroupId());
+			
+		}
 		
 		return null;
 	}
