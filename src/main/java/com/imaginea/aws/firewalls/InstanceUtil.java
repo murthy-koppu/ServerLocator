@@ -11,7 +11,7 @@ import com.amazonaws.services.ec2.model.GroupIdentifier;
 import com.amazonaws.services.ec2.model.Instance;
 import com.amazonaws.services.ec2.model.Reservation;
 import com.amazonaws.services.ec2.model.SecurityGroup;
-import com.imaginea.serverlocator.util.IpPermsUtil;
+import com.imaginea.serverlocator.util.OptimizedIpPerms;
 import com.imaginea.serverlocator.util.LoadAWSConfigUtility;
 
 public class InstanceUtil {
@@ -38,13 +38,13 @@ public class InstanceUtil {
 	
 	
 	
-	public List<IpPermsUtil> getPermissibleIpPermsForInstance(Instance instance){
-		List<IpPermsUtil> permissibleIPPermsSGModels = new ArrayList<IpPermsUtil>();
+	public List<OptimizedIpPerms> getPermissibleIpPermsForInstance(Instance instance){
+		List<OptimizedIpPerms> permissibleIPPermsSGModels = new ArrayList<OptimizedIpPerms>();
 		List<GroupIdentifier> instanceSGroupIdentifiers = instance.getSecurityGroups();
-		
+		OptimizedIpPerms instOptimizedIpPerms = new OptimizedIpPerms(); 
 		for(GroupIdentifier sGroupIdentifier: instanceSGroupIdentifiers){
 			SecurityGroup instSGroup = mapSGroupsWithId.get(sGroupIdentifier.getGroupId());
-			
+			instOptimizedIpPerms.
 		}
 		
 		return null;
