@@ -1,8 +1,5 @@
 package com.imaginea.serverlocator.util;
 
-import java.util.HashSet;
-import java.util.Set;
-
 public interface ApplicationConstants {
 	 public static final int MILLIS_PER_SECOND = 1000;
 	 public static final String WEB_SERVER_HEADER_NAME = "Server";

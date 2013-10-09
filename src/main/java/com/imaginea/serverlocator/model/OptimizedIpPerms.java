@@ -13,7 +13,7 @@ import com.imaginea.serverlocator.util.LoadAWSConfigUtility;
 
 public class OptimizedIpPerms {
 
-	private Set<String> associatedSGroupIds = new HashSet<String>();
+	private Set<String> associatedSGroupIdsToProtocol = new HashSet<String>();
 	private Map<String, List<PermissibleSocketModel>> permissibleSktsToProtocol = new HashMap<String, List<PermissibleSocketModel>>();
 	private boolean isAllIps = false;
 
@@ -26,7 +26,7 @@ public class OptimizedIpPerms {
 	}
 
 	public Set<String> getAssociatedSGroupIds() {
-		return associatedSGroupIds;
+		return associatedSGroupIdsToProtocol;
 	}
 
 	public Map<String, List<PermissibleSocketModel>> getPermissibleSktsToProtocol() {
@@ -36,91 +36,79 @@ public class OptimizedIpPerms {
 	public void merge(IpPermission inIpPermission) {
 		List<UserIdGroupPair> lsAssocUserSGroups = inIpPermission
 				.getUserIdGroupPairs();
-		if (lsAssocUserSGroups != null && !lsAssocUserSGroups.isEmpty()) {
-			for (UserIdGroupPair assocSGroup : lsAssocUserSGroups) {
-				if (assocSGroup
-						.getUserId()
-						.trim()
-						.toUpperCase()
-						.equals(LoadAWSConfigUtility.getAccountId().trim()
-								.toUpperCase())) {
-					// System.out.println("Added groupIds "+assocSGroup.getGroupId());
-					associatedSGroupIds.add(assocSGroup.getGroupId());
-				}
-			}
-		} else {
-			List<PermissibleSocketModel> permissibleSockets = permissibleSktsToProtocol
-					.get(inIpPermission.getIpProtocol());
-			boolean isMerged = false;
-			if (inIpPermission.getIpRanges() == null
-					|| inIpPermission.getIpRanges().isEmpty())
-				return;
-			if (permissibleSockets != null) {
-				for (int k = 0; k < permissibleSockets.size() && !isMerged; k++) {
-					{
-						PermissibleSocketModel permissibleIpSkt = permissibleSockets
-								.get(k);
-						if ((permissibleIpSkt.getIpAddress() + "/" + permissibleIpSkt
-								.getSubNetMask()).equals(inIpPermission
-								.getIpRanges().get(0))) {
-							permissibleIpSkt.addToPermissiblePorts(
-									inIpPermission.getFromPort(),
-									inIpPermission.getToPort());
-							isMerged = true;
-						}
+		if (inIpPermission.getIpProtocol().equals("tcp")) {
+			if (lsAssocUserSGroups != null && !lsAssocUserSGroups.isEmpty()) {
+				for (UserIdGroupPair assocSGroup : lsAssocUserSGroups) {
+					if (assocSGroup.getUserId().equals(
+							LoadAWSConfigUtility.getAccountId())) {
+						associatedSGroupIdsToProtocol.add(assocSGroup
+								.getGroupId());
 					}
 				}
 			}
-			if (permissibleSockets == null || !isMerged) {
-				if (permissibleSockets == null) {
-					permissibleSockets = new ArrayList<PermissibleSocketModel>();
-					permissibleSktsToProtocol.put(
-							inIpPermission.getIpProtocol(), permissibleSockets);
+			List<PermissibleSocketModel> permissibleSockets = permissibleSktsToProtocol
+					.get(inIpPermission.getIpProtocol());
+			if (inIpPermission.getIpRanges() == null
+					|| inIpPermission.getIpRanges().isEmpty())
+				return;
+			/*
+			 * String inIpAddress = inIpPermission.getIpRanges().get(0); if
+			 * (inIpAddress.equals("")) { return; }
+			 */
+			for (String inIpAddress : inIpPermission.getIpRanges()) {
+				boolean isMerged = false;
+				if (permissibleSockets != null) {
+					for (int k = 0; k < permissibleSockets.size() && !isMerged; k++) {
+						{
+							PermissibleSocketModel permissibleIpSkt = permissibleSockets
+									.get(k);
+							if ((permissibleIpSkt.getIpAddress() + "/" + permissibleIpSkt
+									.getSubNetMask()).equals(inIpAddress)) {
+								permissibleIpSkt.addToPermissiblePorts(
+										inIpPermission.getFromPort(),
+										inIpPermission.getToPort());
+								isMerged = true;
+							}
+						}
+					}
 				}
-				permissibleSockets.add(new PermissibleSocketModel(
-						inIpPermission));
-			}
-		}
-	}
-
-	private boolean mergeOnIPAddress(PermissibleSocketModel existingSkt,
-			IpPermission newIpPerms) {
-		String[] newIpParts = newIpPerms.getIpRanges().get(0).split("/");
-		int newSubNetMask = Integer.parseInt(newIpParts[1]);
-		int subnetMaskDelta = existingSkt.getSubNetMask() - newSubNetMask;
-		if (subnetMaskDelta == 0) {
-			if (existingSkt.getIpAddress().equals(newIpParts[0])) {
-				return true;
-			}
-			return false;
-		} else {
-			String[] newIpAddrCIDRParts = newIpParts[0].split(".");
-			String[] existingIpAddrCIDRParts = existingSkt.getIpAddress()
-					.split(".");
-			int minimumMask = subnetMaskDelta < 0 ? existingSkt.getSubNetMask()
-					: newSubNetMask;
-			for (int k = 0; k < 4 && minimumMask > 0; k++, minimumMask -= 8) {
-				int newIpCIDRPart = Integer.parseInt(newIpAddrCIDRParts[k]);
-				int existingIpCIDRPart = Integer
-						.parseInt(existingIpAddrCIDRParts[k]);
-				int subNetMaskResult = newIpCIDRPart & existingIpCIDRPart;
-				if (subnetMaskDelta < 0) {
-					if (subNetMaskResult != existingIpCIDRPart)
-						return false;
-				} else {
-					if (subNetMaskResult != newIpCIDRPart)
-						return false;
+				if (permissibleSockets == null || !isMerged) {
+					if (permissibleSockets == null) {
+						permissibleSockets = new ArrayList<PermissibleSocketModel>();
+						permissibleSktsToProtocol.put(
+								inIpPermission.getIpProtocol(),
+								permissibleSockets);
+					}
+					permissibleSockets.add(new PermissibleSocketModel(
+							inIpPermission));
 				}
 			}
-			existingSkt.setIpAddress(subnetMaskDelta < 0 ? existingSkt
-					.getIpAddress() : newIpParts[0]);
-			existingSkt.setSubNetMask(minimumMask);
-			existingSkt.addToPermissiblePorts(newIpPerms.getFromPort(),
-					newIpPerms.getToPort());
-			return true;
 		}
+
 	}
 
+	/*
+	 * private boolean mergeOnIPAddress(PermissibleSocketModel existingSkt,
+	 * IpPermission newIpPerms) { String[] newIpParts =
+	 * newIpPerms.getIpRanges().get(0).split("/"); int newSubNetMask =
+	 * Integer.parseInt(newIpParts[1]); int subnetMaskDelta =
+	 * existingSkt.getSubNetMask() - newSubNetMask; if (subnetMaskDelta == 0) {
+	 * if (existingSkt.getIpAddress().equals(newIpParts[0])) { return true; }
+	 * return false; } else { String[] newIpAddrCIDRParts =
+	 * newIpParts[0].split("."); String[] existingIpAddrCIDRParts =
+	 * existingSkt.getIpAddress() .split("."); int minimumMask = subnetMaskDelta
+	 * < 0 ? existingSkt.getSubNetMask() : newSubNetMask; for (int k = 0; k < 4
+	 * && minimumMask > 0; k++, minimumMask -= 8) { int newIpCIDRPart =
+	 * Integer.parseInt(newIpAddrCIDRParts[k]); int existingIpCIDRPart = Integer
+	 * .parseInt(existingIpAddrCIDRParts[k]); int subNetMaskResult =
+	 * newIpCIDRPart & existingIpCIDRPart; if (subnetMaskDelta < 0) { if
+	 * (subNetMaskResult != existingIpCIDRPart) return false; } else { if
+	 * (subNetMaskResult != newIpCIDRPart) return false; } }
+	 * existingSkt.setIpAddress(subnetMaskDelta < 0 ? existingSkt
+	 * .getIpAddress() : newIpParts[0]); existingSkt.setSubNetMask(minimumMask);
+	 * existingSkt.addToPermissiblePorts(newIpPerms.getFromPort(),
+	 * newIpPerms.getToPort()); return true; } }
+	 */
 	/*
 	 * private void mergeOnPorts(IpPermission newIpPerms, PermissibleSocketModel
 	 * existingSkt){
