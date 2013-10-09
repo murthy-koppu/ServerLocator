@@ -31,16 +31,21 @@ public class AWSInstanceUtil {
 	public static void main(String[] args) {
 		AWSInstanceUtil obj = new AWSInstanceUtil();
 		obj.getEC2Instances();
-		System.out.println("$('document').ready(function () { \n data = "+obj.publishInstanceConnectionsToJson().toString()+"; \n });");
+		System.out.println("$('document').ready(function () { \n data = "
+				+ obj.publishInstanceConnectionsToJson().toString()
+				+ "; \n });");
 	}
-	
-	public String getInstanceRelationsInJson(){
+
+	public String getInstanceRelationsInJson() {
 		AWSInstanceUtil obj = new AWSInstanceUtil();
 		obj.getEC2Instances();
-		return "$('document').ready(function () { \n data = "+obj.publishInstanceConnectionsToJson().toString()+"; \n });";
+		return "$('document').ready(function () { \n data = "
+				+ obj.publishInstanceConnectionsToJson().toString()
+				+ "; \n });";
 	}
 
 	public JSONObject publishInstanceConnectionsToJson() {
+		List<Instance> startPointInstances = findStartPointInstances();
 		JSONObject rootInstanceRel = new JSONObject();
 		Instance instance = null;
 		for (int k = 0; k < lsInstances.size(); k++) {
@@ -50,20 +55,22 @@ public class AWSInstanceUtil {
 				jsonInstances.put("name", instance.getPrivateIpAddress());
 				jsonInstances.put("serialNo", k);
 				jsonInstances.put("instanceId", instance.getInstanceId());
-				jsonInstances.put("instanceState", instance.getState().getName());
+				jsonInstances.put("instanceState", instance.getState()
+						.getName());
+				jsonInstances.put("isStartPoint",
+						startPointInstances.contains(instance) ? true : false);
 				rootInstanceRel.append("nodes", jsonInstances);
 				publishInstanceLinksToJson(rootInstanceRel, instance, k);
 			} catch (JSONException e) {
 				e.printStackTrace();
-			}			
+			}
 		}
 		return rootInstanceRel;
 	}
 
 	private void publishInstanceLinksToJson(JSONObject rootInstanceRel,
 			Instance instance, int k) throws JSONException {
-		OptimizedIpPerms ipPermDtls = ipPermsToEachInstance
-				.get(instance);
+		OptimizedIpPerms ipPermDtls = ipPermsToEachInstance.get(instance);
 		for (int t = 0; t < lsInstances.size(); t++) {
 			if (t == k) {
 				continue;
@@ -87,12 +94,12 @@ public class AWSInstanceUtil {
 		if (instancesResult != null
 				&& instancesResult.getReservations() != null) {
 			for (Reservation reservation : instancesResult.getReservations()) {
-				for(Instance instanceFromReserv:reservation.getInstances()){
-					if(!instanceFromReserv.getState().getName().equals(InstanceStateName.Terminated.toString())){
+				for (Instance instanceFromReserv : reservation.getInstances()) {
+					if (!instanceFromReserv.getState().getName()
+							.equals(InstanceStateName.Terminated.toString())) {
 						lsInstances.add(instanceFromReserv);
 					}
 				}
-				
 			}
 		}
 		for (Instance instance : lsInstances) {
@@ -165,21 +172,27 @@ public class AWSInstanceUtil {
 		String privateIpOfOtherInst = instance.getPrivateIpAddress();
 		if (lsSkts != null && !lsSkts.isEmpty()) {
 			for (PermissibleSocketModel permissibleSkt : lsSkts) {
-				if (permissibleSkt.isAllIps() || isPermissibleIp(permissibleSkt.getIpAddress(), privateIpOfOtherInst)) {
+				if (permissibleSkt.isAllIps()
+						|| isPermissibleIp(permissibleSkt.getIpAddress(),
+								privateIpOfOtherInst)) {
 					return true;
 				}
 			}
-		}		
+		}
 		return false;
 	}
-	
-	private boolean isPermissibleIp(String sourcePermissibleIp, String inputIp){
+
+	private boolean isPermissibleIp(String sourcePermissibleIp, String inputIp) {
+		if (sourcePermissibleIp == null || inputIp == null
+				|| sourcePermissibleIp.equals("") || inputIp.equals(""))
+			return false;
 		String[] sourcePermisIPCIDRParts = sourcePermissibleIp.split("\\.");
 		String[] inputIpCIDRParts = inputIp.split("\\.");
-		for(int i=0; i<4;i++){
-			int sourcePermisIpPart = Integer.parseInt(sourcePermisIPCIDRParts[i]);
+		for (int i = 0; i < 4; i++) {
+			int sourcePermisIpPart = Integer
+					.parseInt(sourcePermisIPCIDRParts[i]);
 			int inputIpPart = Integer.parseInt(inputIpCIDRParts[i]);
-			if((sourcePermisIpPart & inputIpPart) != sourcePermisIpPart){
+			if ((sourcePermisIpPart & inputIpPart) != sourcePermisIpPart) {
 				return false;
 			}
 		}
