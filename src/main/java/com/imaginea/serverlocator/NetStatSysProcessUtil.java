@@ -30,7 +30,7 @@ public class NetStatSysProcessUtil implements ApplicationConstants {
 	
 	//System.out.println(new AWSInstanceUtil().getInstanceRelationsInJson());	
 	}
-
+ 
 	public void processNetStatRecs(String netStatIn, String systemIps)
 			throws Exception {
 		JSONObject systemLvlRootJSON = new JSONObject();
@@ -49,7 +49,7 @@ public class NetStatSysProcessUtil implements ApplicationConstants {
 
 		NetStatLinuxParser linuxParser = new NetStatLinuxParser();
 		List<NetStatProcessModel> netStatRecords = linuxParser
-				.getNetStatRecords(netStatIn);
+				.getValidNetStatRecords(netStatIn,standardLocalIps);
 		for (NetStatProcessModel netStatRec : netStatRecords) {
 			String communicationState = netStatRec.getState();
 			if (communicationState.equals(NET_STAT_PROCESS_COMMUNICATION_STATE)) {

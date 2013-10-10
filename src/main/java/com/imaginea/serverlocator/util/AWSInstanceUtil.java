@@ -53,6 +53,7 @@ public class AWSInstanceUtil {
 			JSONObject jsonInstances = new JSONObject();
 			try {
 				jsonInstances.put("name", instance.getPrivateIpAddress());
+				jsonInstances.put("publicDNS", instance.getPublicDnsName());
 				jsonInstances.put("serialNo", k);
 				jsonInstances.put("instanceId", instance.getInstanceId());
 				jsonInstances.put("instanceState", instance.getState()
@@ -95,8 +96,8 @@ public class AWSInstanceUtil {
 				&& instancesResult.getReservations() != null) {
 			for (Reservation reservation : instancesResult.getReservations()) {
 				for (Instance instanceFromReserv : reservation.getInstances()) {
-					if (!instanceFromReserv.getState().getName()
-							.equals(InstanceStateName.Terminated.toString())) {
+					if (instanceFromReserv.getState().getName()
+							.equals(InstanceStateName.Running.toString())) {
 						lsInstances.add(instanceFromReserv);
 					}
 				}

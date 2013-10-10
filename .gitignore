@@ -3,3 +3,4 @@
 /.project
 /.settings/*
 /src/main/java/com/imaginea/serverlocator/retrials/*
+/AWSInstanceKeyPairs/*
