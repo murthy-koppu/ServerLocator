@@ -35,10 +35,6 @@ public class NetStatLinuxParser implements ApplicationConstants{
 		String[] netStatRecords = netStatInput.split(";");
 		for (String netStatRecord : netStatRecords)
 			parseNetStatRecord(netStatRecord);
-		/*localIps.removeAll(defaultLocalIps);
-		for(String ipAddress : localIps){
-			
-		}*/
 		
 		return lsNetStatRecs;
 	}

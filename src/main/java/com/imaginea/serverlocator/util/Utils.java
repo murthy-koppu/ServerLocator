@@ -21,7 +21,8 @@ public class Utils {
 		defaultLocalIps.add("127.0.0.1");
 		defaultLocalIps.add("0.0.0.0");
 		defaultLocalIps.add("localhost");
-		defaultLocalIps.add(":::");
+		defaultLocalIps.add("::");
+		defaultLocalIps.add("::1");
 	}
 
 	public static DataInputStream getDataInStreamFromServer(Socket socket)
