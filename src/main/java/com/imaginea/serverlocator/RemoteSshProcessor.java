@@ -20,15 +20,14 @@ public class RemoteSshProcessor implements Runnable,ApplicationConstants{
 	public void run() {
 		 JSch jsch=new JSch();
 		 try {
-			jsch.addIdentity(AWSInstanceKeyPairLoader.getKeyPairUserIdModel(instanceJsonProperties.getString("instanceProperty")));
+			jsch.addIdentity("");
+			 String user="ec2-user";
+		     String host="ec2-50-19-178-220.compute-1.amazonaws.com";
+		     Session session=jsch.getSession(user, host, 22);
 		} catch (JSchException e) {
 			e.printStackTrace();
-		} catch (JSONException e) {
-			e.printStackTrace();
 		}
-		 String user="ec2-user";
-	     String host="ec2-50-19-178-220.compute-1.amazonaws.com";
-	     Session session=jsch.getSession(user, host, 22);
+		
 
 		
 	}
