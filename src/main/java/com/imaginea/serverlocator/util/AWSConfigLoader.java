@@ -18,19 +18,24 @@ import com.amazonaws.services.ec2.AmazonEC2Client;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagement;
 import com.amazonaws.services.identitymanagement.AmazonIdentityManagementClient;
 
-public class LoadAWSConfigUtility {
+public class AWSConfigLoader {
 	private static Properties properties = new Properties();
-	/*private static AmazonEC2 amazonEC2 = new AmazonEC2Client(
-			new ClasspathPropertiesFileCredentialsProvider());*/
+	private static final String AWS_CREDENTITALS_PROP_FILE_NAME = "AwsCredentials.properties";
+	/*
+	 * private static AmazonEC2 amazonEC2 = new AmazonEC2Client( new
+	 * ClasspathPropertiesFileCredentialsProvider());
+	 */
 	private static AWSCredentialsLoader awsCredentialsLoader = new AWSCredentialsLoader();
-	private static AmazonEC2 amazonEC2 = new AmazonEC2Client(awsCredentialsLoader);
-	private static AmazonIdentityManagement amazonIM = new AmazonIdentityManagementClient(awsCredentialsLoader);
+	private static AmazonEC2 amazonEC2 = new AmazonEC2Client(
+			awsCredentialsLoader);
+	private static AmazonIdentityManagement amazonIM = new AmazonIdentityManagementClient(
+			awsCredentialsLoader);
 	private static Region region;
 	private static String accountId;
 
 	static {
-		try {			
-			InputStream propFileInputStream = LoadAWSConfigUtility.class
+		try {
+			InputStream propFileInputStream = AWSConfigLoader.class
 					.getClassLoader().getResourceAsStream("config.properties");
 			properties.load(propFileInputStream);
 			region = RegionUtils.getRegion(properties
@@ -60,34 +65,31 @@ public class LoadAWSConfigUtility {
 	public static String getAccountId() {
 		return accountId;
 	}
-	
-	private static class AWSCredentialsLoader implements AWSCredentials{
+
+	private static class AWSCredentialsLoader implements AWSCredentials {
 		private static Properties awsCredentialProperties = new Properties();
 		{
-			 FileInputStream file;
 			try {
-				//String path = LoadAWSConfigUtility.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-				String path = LoadAWSConfigUtility.class.getProtectionDomain().getCodeSource().getLocation().getPath();
-				String decodedPath = URLDecoder.decode(path, "UTF-8");
-				file = new FileInputStream(decodedPath+"/../AwsCredentials.properties");
+				FileInputStream file = new FileInputStream(
+						ApplicationConstants.RESOURCES_LOCATION_PATH
+								+ AWS_CREDENTITALS_PROP_FILE_NAME);
 				awsCredentialProperties.load(file);
 			} catch (FileNotFoundException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
-			}		 
+			}
 		}
-		
+
 		@Override
 		public String getAWSAccessKeyId() {
 			return awsCredentialProperties.get("accessKey").toString();
-			
 		}
 
 		@Override
 		public String getAWSSecretKey() {
 			return awsCredentialProperties.get("secretKey").toString();
-			
+
 		}
 	}
 

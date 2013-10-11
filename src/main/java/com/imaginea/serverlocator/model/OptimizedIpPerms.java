@@ -9,7 +9,7 @@ import java.util.Set;
 
 import com.amazonaws.services.ec2.model.IpPermission;
 import com.amazonaws.services.ec2.model.UserIdGroupPair;
-import com.imaginea.serverlocator.util.LoadAWSConfigUtility;
+import com.imaginea.serverlocator.util.AWSConfigLoader;
 
 public class OptimizedIpPerms {
 
@@ -40,7 +40,7 @@ public class OptimizedIpPerms {
 			if (lsAssocUserSGroups != null && !lsAssocUserSGroups.isEmpty()) {
 				for (UserIdGroupPair assocSGroup : lsAssocUserSGroups) {
 					if (assocSGroup.getUserId().equals(
-							LoadAWSConfigUtility.getAccountId())) {
+							AWSConfigLoader.getAccountId())) {
 						associatedSGroupIdsToProtocol.add(assocSGroup
 								.getGroupId());
 					}

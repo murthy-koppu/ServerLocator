@@ -15,7 +15,7 @@ import com.amazonaws.services.ec2.model.Reservation;
 import com.amazonaws.services.ec2.model.SecurityGroup;
 import com.amazonaws.util.json.JSONException;
 import com.amazonaws.util.json.JSONObject;
-import com.imaginea.serverlocator.util.LoadAWSConfigUtility;
+import com.imaginea.serverlocator.util.AWSConfigLoader;
 
 public class FetchSecurityGroupOfInstances {
 	
@@ -103,7 +103,7 @@ public class FetchSecurityGroupOfInstances {
 	
 	private List<Instance> getLsEC2Instance(){
 		List<Instance> lsInstances = new ArrayList<Instance>();
-		DescribeInstancesResult instancesResult = LoadAWSConfigUtility.getAmazonEC2().describeInstances();
+		DescribeInstancesResult instancesResult = AWSConfigLoader.getAmazonEC2().describeInstances();
 		if(instancesResult != null && instancesResult.getReservations() != null){
 			for(Reservation reservation: instancesResult.getReservations()){
 				lsInstances.addAll(reservation.getInstances());
@@ -113,7 +113,7 @@ public class FetchSecurityGroupOfInstances {
 	}
 	
 	private JSONObject publishAllSecurityGroupDetailsAsJSONWithInstanceId(Map<String,List<Instance>> groupIdentifiersWithInstances){
-		DescribeSecurityGroupsResult securityGroupRslt =  LoadAWSConfigUtility.getAmazonEC2().describeSecurityGroups();
+		DescribeSecurityGroupsResult securityGroupRslt =  AWSConfigLoader.getAmazonEC2().describeSecurityGroups();
 		if(securityGroupRslt != null && securityGroupRslt.getSecurityGroups() != null && !securityGroupRslt.getSecurityGroups().isEmpty()){
 			JSONObject jsonSGsParent = new JSONObject();
 			for(SecurityGroup securityGroup : securityGroupRslt.getSecurityGroups()){
@@ -140,7 +140,7 @@ public class FetchSecurityGroupOfInstances {
 	private JSONObject publishSecurityGroupDetailsAsJSON(Set<String> groupIdentifiers){
 		DescribeSecurityGroupsRequest securityGroupReq = new DescribeSecurityGroupsRequest();
 		securityGroupReq.setGroupIds(groupIdentifiers);
-		DescribeSecurityGroupsResult securityGroupRslt =  LoadAWSConfigUtility.getAmazonEC2().describeSecurityGroups(securityGroupReq);
+		DescribeSecurityGroupsResult securityGroupRslt =  AWSConfigLoader.getAmazonEC2().describeSecurityGroups(securityGroupReq);
 		if(securityGroupRslt != null && securityGroupRslt.getSecurityGroups() != null && !securityGroupRslt.getSecurityGroups().isEmpty()){
 			JSONObject jsonSGsParent = new JSONObject();
 			for(SecurityGroup securityGroup : securityGroupRslt.getSecurityGroups()){

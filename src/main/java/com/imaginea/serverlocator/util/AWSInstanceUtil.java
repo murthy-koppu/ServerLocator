@@ -1,7 +1,6 @@
 package com.imaginea.serverlocator.util;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,7 +13,6 @@ import com.amazonaws.services.ec2.model.DescribeInstancesResult;
 import com.amazonaws.services.ec2.model.DescribeSecurityGroupsResult;
 import com.amazonaws.services.ec2.model.GroupIdentifier;
 import com.amazonaws.services.ec2.model.Instance;
-import com.amazonaws.services.ec2.model.InstanceState;
 import com.amazonaws.services.ec2.model.InstanceStateName;
 import com.amazonaws.services.ec2.model.IpPermission;
 import com.amazonaws.services.ec2.model.Reservation;
@@ -22,7 +20,7 @@ import com.amazonaws.services.ec2.model.SecurityGroup;
 import com.imaginea.serverlocator.model.OptimizedIpPerms;
 import com.imaginea.serverlocator.model.PermissibleSocketModel;
 
-public class AWSInstanceUtil {
+public class AWSInstanceUtil implements ApplicationConstants{
 	Map<String, SecurityGroup> mapSGroupsWithId = new HashMap<String, SecurityGroup>();
 	Map<Instance, OptimizedIpPerms> ipPermsToEachInstance = new HashMap<Instance, OptimizedIpPerms>();
 	List<Instance> lsInstances = new ArrayList<Instance>();
@@ -52,15 +50,15 @@ public class AWSInstanceUtil {
 			instance = lsInstances.get(k);
 			JSONObject jsonInstances = new JSONObject();
 			try {
-				jsonInstances.put("name", instance.getPrivateIpAddress());
+				jsonInstances.put(TOPOLOGY_INSTANCE_PRIVATE_IP_PROP_NAME, instance.getPrivateIpAddress());
 				jsonInstances.put("publicDNS", instance.getPublicDnsName());
-				jsonInstances.put("serialNo", k);
+				jsonInstances.put(TOPOLOGY_INSTANCE_NODE_INSTANCE_ID, k);
 				jsonInstances.put("instanceId", instance.getInstanceId());
 				jsonInstances.put("instanceState", instance.getState()
 						.getName());
 				jsonInstances.put("isStartPoint",
 						startPointInstances.contains(instance) ? true : false);
-				rootInstanceRel.append("nodes", jsonInstances);
+				rootInstanceRel.append(TOPOLOGY_INSTANCES_NODES_PARENT, jsonInstances);
 				publishInstanceLinksToJson(rootInstanceRel, instance, k);
 			} catch (JSONException e) {
 				e.printStackTrace();
@@ -79,17 +77,17 @@ public class AWSInstanceUtil {
 			Instance otherInstance = lsInstances.get(t);
 			if (canTalkOn(ipPermDtls, otherInstance)) {
 				JSONObject linkJson = new JSONObject();
-				linkJson.put("source", k);
-				linkJson.put("target", t);
-				linkJson.put("relationship", "rel");
-				rootInstanceRel.append("links", linkJson);
+				linkJson.put(TOPOLOGY_INSTANCE_LINK_SOURCE, k);
+				linkJson.put(TOPOLOGY_INSTANCE_LINK_TARGET, t);
+				linkJson.put(TOPOLOGY_INSTANCE_LINK_RELATIONSHIP, "rel");
+				rootInstanceRel.append(TOPOLOGY_INSTANCE_LINKS_PARENT, linkJson);
 			}
 		}
 	}
 
 	public void getEC2Instances() {
 		loadSecurityGroups();
-		DescribeInstancesResult instancesResult = LoadAWSConfigUtility
+		DescribeInstancesResult instancesResult = AWSConfigLoader
 				.getAmazonEC2().describeInstances();
 
 		if (instancesResult != null
@@ -110,7 +108,7 @@ public class AWSInstanceUtil {
 	}
 
 	public void loadSecurityGroups() {
-		DescribeSecurityGroupsResult securityGroupRslt = LoadAWSConfigUtility
+		DescribeSecurityGroupsResult securityGroupRslt = AWSConfigLoader
 				.getAmazonEC2().describeSecurityGroups();
 		if (securityGroupRslt != null
 				&& securityGroupRslt.getSecurityGroups() != null

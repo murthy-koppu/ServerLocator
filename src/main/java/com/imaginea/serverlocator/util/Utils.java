@@ -5,9 +5,11 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.SocketException;
+import java.net.URLDecoder;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -87,9 +89,20 @@ public class Utils {
 		int ipV4Index = ipAddress.indexOf("::ffff:");
 		return ipV4Index == 0 ? ipAddress.substring(7) : ipAddress;
 	}
-	
-	public static Set<String> getDefaultLocalIps(){
+
+	public static Set<String> getDefaultLocalIps() {
 		return defaultLocalIps;
 	}
 
+	public static String getResourcesLocationPath() {
+		String path = Utils.class.getProtectionDomain().getCodeSource()
+				.getLocation().getPath()
+				+ "/../";
+		try {
+			return URLDecoder.decode(path, "UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		return path;
+	}
 }
